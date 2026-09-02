@@ -1,1 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+*.backup
+*.bak
+*.before-*
+*.backup-*
+backups/
+
 .env
+.env.*
+
+*.db
