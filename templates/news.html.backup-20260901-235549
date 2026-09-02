@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main class="news-page">
+
+    <!-- NEWS HERO -->
+    <section class="news-hero-pro">
+
+        <div class="news-hero-copy">
+            <span class="eyebrow">ZIMPLUG OFFICIAL</span>
+
+            <h1>
+                Music.<br>
+                <span>News.</span>
+            </h1>
+
+            <p>
+                The latest stories, announcements, releases and updates
+                from ZimPlug Music.
+            </p>
+        </div>
+
+        <div class="news-hero-mark">
+            <span>NEWS</span>
+        </div>
+
+    </section>
+
+
+    <!-- NEWS HEADER -->
+    <section class="news-section-header">
+
+        <div>
+            <span class="eyebrow">LATEST STORIES</span>
+            <h2>What's happening.</h2>
+        </div>
+
+        <span class="news-count">
+            {{ articles|length }} STORIES
+        </span>
+
+    </section>
+
+
+    <!-- NEWS GRID -->
+    <section class="news-grid-pro">
+
+        {% for article in articles %}
+
+        <article class="news-card-pro">
+
+            <div class="news-card-image">
+
+                {% if article.image %}
+
+                <img
+                    src="{{ url_for('static', filename='images/news/' + article.image) }}"
+                    alt="{{ article.title }}"
+                    loading="lazy"
+                >
+
+                {% else %}
+
+                <div class="news-placeholder">
+                    <span>♪</span>
+                </div>
+
+                {% endif %}
+
+                <div class="news-card-number">
+                    {{ "%02d"|format(loop.index) }}
+                </div>
+
+            </div>
+
+
+            <div class="news-card-content">
+
+                <div class="news-card-meta">
+                    <span>ZIMPLUG NEWS</span>
+                    <span>{{ article.created_at }}</span>
+                </div>
+
+                <h2>
+                    {{ article.title }}
+                </h2>
+
+                <p>
+                    {{ article.body }}
+                </p>
+
+                <div class="news-card-footer">
+                    <span>READ STORY</span>
+                    <span class="news-arrow">→</span>
+                </div>
+
+            </div>
+
+        </article>
+
+        {% else %}
+
+        <div class="news-empty">
+
+            <div class="news-empty-icon">♪</div>
+
+            <span class="eyebrow">ZIMPLUG NEWS</span>
+
+            <h2>No news yet.</h2>
+
+            <p>
+                Check back soon for the latest ZimPlug Music stories,
+                announcements and updates.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</main>
+
+{% endblock %}

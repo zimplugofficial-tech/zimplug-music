@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% if article %}
+    {% set page_title = "Edit Article" %}
+{% else %}
+    {% set page_title = "Add Article" %}
+{% endif %}
+
+{% block title %}{{ page_title }} — ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<style>
+.news-editor {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+.editor-top {
+    margin-bottom: 34px;
+}
+
+.editor-label {
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    margin-bottom: 10px;
+}
+
+.editor-top h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 34px;
+    letter-spacing: -.03em;
+}
+
+.editor-top p {
+    margin: 10px 0 0;
+    color: #858585;
+}
+
+.news-form {
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 9px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,.1);
+    background: #101010;
+    color: #fff;
+    padding: 14px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: rgba(212,175,55,.6);
+}
+
+.form-group textarea {
+    min-height: 420px;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+.image-upload {
+    border: 1px dashed rgba(212,175,55,.4);
+    background: #101010;
+    padding: 24px;
+}
+
+.image-upload input[type="file"] {
+    width: 100%;
+    color: #858585;
+}
+
+.current-image {
+    margin-top: 18px;
+}
+
+.current-image img {
+    display: block;
+    width: 220px;
+    height: 140px;
+    object-fit: cover;
+}
+
+.current-image span {
+    display: block;
+    margin-top: 8px;
+    color: #858585;
+    font-size: 10px;
+}
+
+.editor-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.editor-back {
+    color: #858585;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.editor-back:hover {
+    color: #fff;
+}
+
+.editor-submit {
+    min-height: 46px;
+    padding: 0 26px;
+    border: 0;
+    background: #d4af37;
+    color: #050505;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    cursor: pointer;
+}
+
+.editor-submit:hover {
+    background: #f1ce58;
+}
+
+@media (max-width: 600px) {
+    .news-form {
+        padding: 20px;
+    }
+
+    .editor-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .editor-submit {
+        width: 100%;
+    }
+}
+</style>
+
+<section class="news-editor">
+
+    <div class="editor-top">
+        <div class="editor-label">ZIMPLUG NEWS</div>
+        <h1>{{ page_title }}</h1>
+        <p>
+            {% if article %}
+                Update your article and replace its photo if needed.
+            {% else %}
+                Write and publish a new article.
+            {% endif %}
+        </p>
+    </div>
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="news-form"
+        action="{% if article %}{{ url_for('edit_news', news_id=article['id']) }}{% else %}{{ url_for('add_news') }}{% endif %}"
+    >
+
+        <div class="form-group">
+            <label>ARTICLE TITLE</label>
+
+            <input
+                type="text"
+                name="title"
+                value="{{ article['title'] if article else '' }}"
+                placeholder="Enter article title"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label>ARTICLE PHOTO</label>
+
+            <div class="image-upload">
+
+                <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                >
+
+                {% if article and article['image'] %}
+
+                <div class="current-image">
+                    <img
+                        src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+                        alt="{{ article['title'] }}"
+                    >
+
+                    <span>
+                        Current photo — upload another photo to replace it.
+                    </span>
+                </div>
+
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>ARTICLE CONTENT</label>
+
+            <textarea
+                name="body"
+                placeholder="Write your article here..."
+                required
+            >{{ article['body'] if article else '' }}</textarea>
+        </div>
+
+        <div class="editor-actions">
+
+            <a
+                href="{{ url_for('admin_news') }}"
+                class="editor-back"
+            >
+                ← BACK TO PUBLISH MANAGER
+            </a>
+
+            <button type="submit" class="editor-submit">
+                {% if article %}
+                    SAVE CHANGES
+                {% else %}
+                    PUBLISH ARTICLE
+                {% endif %}
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

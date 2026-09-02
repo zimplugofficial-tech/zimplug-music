@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ZimPlug Admin</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <a href="/" class="brand">
+        <img src="{{ url_for('static', filename='images/logo.png') }}">
+    </a>
+
+    <strong>ADMIN</strong>
+
+    <a href="/admin/logout" class="header-account">
+        LOG OUT
+    </a>
+
+</header>
+
+
+<main class="admin-page">
+
+    <section class="admin-heading">
+
+        <span class="eyebrow">ZIMPLUG MUSIC</span>
+
+        <h1>Admin Dashboard.</h1>
+
+        <p>
+            Upload music and publish news. Public users never receive
+            access to these tools.
+        </p>
+
+    </section>
+
+
+    <section class="admin-grid">
+
+        <div class="admin-card">
+
+            <span class="eyebrow">UPLOAD</span>
+
+            <h2>New song</h2>
+
+            <form method="POST"
+                  action="/admin/upload"
+                  enctype="multipart/form-data">
+
+                <label>Song title</label>
+                <input name="title" required>
+
+                <label>Artist</label>
+                <input name="artist" required>
+
+                <label>Genre</label>
+                <select name="genre">
+
+                    <option>AfroSounds</option>
+                    <option>Afrobeats</option>
+                    <option>Hip Hop</option>
+                    <option>Zimdancehall</option>
+                    <option>R&B</option>
+                    <option>Amapiano</option>
+                    <option>Gospel</option>
+                    <option>Dance</option>
+                    <option>Pop</option>
+                    <option>Soul</option>
+                    <option>Reggae</option>
+                    <option>Other</option>
+
+                </select>
+
+                <label>Album</label>
+                <input name="album">
+
+                <label>Audio</label>
+                <input type="file"
+                       name="audio"
+                       accept=".mp3,.wav,.m4a,.aac,.ogg"
+                       required>
+
+                <label>Cover</label>
+                <input type="file"
+                       name="cover"
+                       accept=".jpg,.jpeg,.png,.webp">
+
+                <button class="gold-button">
+                    PUBLISH SONG
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="admin-card">
+
+            <span class="eyebrow">NEWS</span>
+
+            <h2>Publish update</h2>
+
+            <form method="POST"
+                  action="/admin/news">
+
+                <label>Headline</label>
+                <input name="title" required>
+
+                <label>Story</label>
+                <textarea name="body" rows="8" required></textarea>
+
+                <button class="gold-button">
+                    PUBLISH NEWS
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <section class="admin-card">
+
+        <span class="eyebrow">LIBRARY</span>
+
+        <h2>Uploaded music</h2>
+
+        {% for song in songs %}
+
+        <div class="admin-song">
+
+            <div>
+                <strong>{{ song.title }}</strong>
+                <span>{{ song.artist }}</span>
+            </div>
+
+            <div>
+                {{ song.plays }} plays ·
+                {{ song.downloads }} downloads
+            </div>
+
+            <form method="POST"
+                  action="/admin/delete-song/{{ song.id }}">
+
+                <button class="delete-button">
+                    DELETE
+                </button>
+
+            </form>
+
+        </div>
+
+        {% else %}
+
+        <p>No music uploaded yet.</p>
+
+        {% endfor %}
+
+    </section>
+
+</main>
+
+</body>
+</html>

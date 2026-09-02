@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.article-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 42px 24px 90px;
+}
+
+.article-back {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 30px;
+    color: #858585;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    transition: color .2s ease;
+}
+
+.article-back:hover {
+    color: #d4af37;
+}
+
+.article-header {
+    max-width: 820px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.article-category {
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    margin-bottom: 16px;
+}
+
+.article-title {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -.035em;
+}
+
+.article-meta {
+    margin-top: 17px;
+    color: #777;
+    font-size: 12px;
+}
+
+.article-divider {
+    width: 48px;
+    height: 1px;
+    margin: 25px auto 30px;
+    background: #d4af37;
+}
+
+.article-image {
+    width: 100%;
+    max-height: 580px;
+    margin: 0 auto 45px;
+    overflow: hidden;
+    background: #101010;
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.article-image img {
+    width: 100%;
+    max-height: 580px;
+    display: block;
+    object-fit: cover;
+}
+
+.article-body {
+    max-width: 820px;
+    margin: 0 auto;
+    color: #d2d2d2;
+    font-size: 18px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.article-body p {
+    margin: 0 0 25px;
+}
+
+.article-footer {
+    max-width: 820px;
+    margin: 55px auto 0;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.article-footer .article-back {
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .article-page {
+        padding: 30px 16px 65px;
+    }
+
+    .article-title {
+        font-size: 32px;
+    }
+
+    .article-image {
+        margin-bottom: 32px;
+    }
+
+    .article-body {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+}
+</style>
+
+<section class="article-page">
+
+    <a href="{{ url_for('news') }}" class="article-back">
+        ← BACK TO NEWS
+    </a>
+
+    <header class="article-header">
+
+        <div class="article-category">
+            ZIMPLUG NEWS
+        </div>
+
+        <h1 class="article-title">
+            {{ article['title'] }}
+        </h1>
+
+        <div class="article-meta">
+            {{ article['created_at'] }}
+        </div>
+
+        <div class="article-divider"></div>
+
+    </header>
+
+    {% if article['image'] %}
+    <div class="article-image">
+        <img
+            src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+            alt="{{ article['title'] }}"
+        >
+    </div>
+    {% endif %}
+
+    <article class="article-body">
+        {{ article['body'] }}
+    </article>
+
+    <footer class="article-footer">
+        <a href="{{ url_for('news') }}" class="article-back">
+            ← BACK TO NEWS
+        </a>
+    </footer>
+
+</section>
+
+{% endblock %}

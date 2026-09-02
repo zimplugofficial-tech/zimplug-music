@@ -1,0 +1,1766 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
+import sqlite3
+from pathlib import Path
+from functools import wraps
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    jsonify,
+    send_from_directory,
+    session,
+    abort,
+)
+from werkzeug.utils import secure_filename
+
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "zimplug.db"
+MUSIC_DIR = BASE_DIR / "static" / "music"
+
+MUSIC_DIR.mkdir(parents=True, exist_ok=True)
+
+app = Flask(__name__)
+
+# Admin authentication uses a browser-session cookie.
+# Closing the browser removes the session automatically.
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = False
+
+app.secret_key = os.environ.get(
+    "ZIMPLUG_SECRET",
+    "zimplug-music-change-this-secret"
+)
+
+ADMIN_USERNAME = os.environ.get("ZIMPLUG_ADMIN", "admin")
+ADMIN_PASSWORD = os.environ.get("ZIMPLUG_ADMIN_PASSWORD", "zimplug123")
+
+ALLOWED_AUDIO = {
+    ".mp3",
+    ".wav",
+    ".m4a",
+    ".aac",
+    ".ogg",
+}
+
+ALLOWED_IMAGE = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+}
+
+
+def db():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+
+def init_db():
+    connection = db()
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS songs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            artist TEXT NOT NULL,
+            genre TEXT DEFAULT 'Other',
+            album TEXT DEFAULT '',
+            cover TEXT DEFAULT '',
+            audio TEXT NOT NULL,
+            plays INTEGER DEFAULT 0,
+            downloads INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Album system: keep existing songs and add grouping/order fields.
+    song_columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(songs)").fetchall()
+    }
+
+    if "album_id" not in song_columns:
+        connection.execute("ALTER TABLE songs ADD COLUMN album_id INTEGER")
+
+    if "track_number" not in song_columns:
+        connection.execute(
+            "ALTER TABLE songs ADD COLUMN track_number INTEGER DEFAULT 0"
+        )
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS albums (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            artist TEXT NOT NULL,
+            genre TEXT DEFAULT 'Other',
+            cover TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS news (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            image TEXT DEFAULT '',
+            views INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Add views column to existing news tables
+    news_columns = [
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(news)").fetchall()
+    ]
+
+    if "views" not in news_columns:
+        connection.execute(
+            "ALTER TABLE news ADD COLUMN views INTEGER DEFAULT 0"
+        )
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    connection.commit()
+    connection.close()
+
+
+init_db()
+
+
+def admin_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not session.get("admin"):
+            return redirect(url_for("admin_login"))
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
+def get_trending_songs(limit=20):
+    connection = db()
+    songs = connection.execute("""
+        SELECT *
+        FROM songs
+        ORDER BY plays DESC, downloads DESC, created_at DESC
+        LIMIT ?
+    """, (limit,)).fetchall()
+    connection.close()
+    return songs
+
+
+def get_trending_albums(limit=20):
+    connection = db()
+
+    albums = connection.execute("""
+        SELECT
+            a.id,
+            a.title,
+            a.artist,
+            a.genre,
+            a.cover,
+            COUNT(s.id) AS track_count,
+            COALESCE(SUM(s.plays), 0) AS total_plays
+        FROM albums a
+        JOIN songs s ON s.album_id = a.id
+        GROUP BY a.id, a.title, a.artist, a.genre, a.cover
+        HAVING COUNT(s.id) > 0
+        ORDER BY total_plays DESC, a.created_at DESC
+        LIMIT ?
+    """, (limit,)).fetchall()
+
+    result = []
+
+    for album in albums:
+        tracks = connection.execute("""
+            SELECT
+                id,
+                title,
+                artist,
+                genre,
+                album,
+                cover,
+                audio,
+                plays,
+                downloads,
+                track_number
+            FROM songs
+            WHERE album_id = ?
+            ORDER BY
+                CASE
+                    WHEN track_number IS NULL OR track_number = 0
+                    THEN 999999
+                    ELSE track_number
+                END,
+                id
+        """, (album["id"],)).fetchall()
+
+        result.append({
+            "id": album["id"],
+            "title": album["title"],
+            "artist": album["artist"],
+            "genre": album["genre"],
+            "cover": album["cover"],
+            "track_count": album["track_count"],
+            "total_plays": album["total_plays"],
+            "tracks": tracks
+        })
+
+    connection.close()
+    return result
+
+def home():
+    songs = get_trending_songs(10)
+    albums = get_trending_albums(10)
+
+    return render_template(
+        "index.html",
+        songs=songs,
+        albums=albums,
+    )
+
+
+@app.route("/")
+def index():
+    songs = get_trending_songs(10)
+    albums = get_trending_albums(10)
+
+    return render_template(
+        "index.html",
+        songs=songs,
+        albums=albums
+    )
+
+
+@app.route("/album/<int:album_id>")
+def album_page(album_id):
+    ensure_album_schema()
+
+    connection = db()
+
+    album = connection.execute("""
+        SELECT
+            id,
+            title,
+            artist,
+            genre,
+            cover,
+            created_at
+        FROM albums
+        WHERE id = ?
+    """, (album_id,)).fetchone()
+
+    if not album:
+        connection.close()
+        return "Album not found", 404
+
+    tracks = connection.execute("""
+        SELECT
+            id,
+            title,
+            artist,
+            genre,
+            album,
+            cover,
+            audio,
+            plays,
+            downloads,
+            track_number
+        FROM songs
+        WHERE album_id = ?
+        ORDER BY
+            CASE
+                WHEN track_number IS NULL OR track_number = 0
+                THEN 999999
+                ELSE track_number
+            END,
+            id
+    """, (album_id,)).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "album.html",
+        album=album,
+        tracks=tracks
+    )
+
+
+@app.route("/music")
+def music():
+    genre = request.args.get("genre", "").strip()
+
+    connection = db()
+
+    if genre:
+        songs = connection.execute("""
+            SELECT *
+            FROM songs
+            WHERE LOWER(genre) = LOWER(?)
+            ORDER BY plays DESC, downloads DESC, created_at DESC
+        """, (genre,)).fetchall()
+    else:
+        songs = connection.execute("""
+            SELECT *
+            FROM songs
+            ORDER BY plays DESC, downloads DESC, created_at DESC
+        """).fetchall()
+
+    connection.close()
+
+    genres = [
+        "AfroSounds",
+        "Afrobeats",
+        "Hip Hop",
+        "Zimdancehall",
+        "R&B",
+        "Amapiano",
+        "Gospel",
+        "Dance",
+        "Pop",
+        "Soul",
+        "Reggae",
+        "Other",
+    ]
+
+    return render_template(
+        "music.html",
+        songs=songs,
+        genres=genres,
+        selected_genre=genre,
+    )
+
+
+@app.route("/news/<int:news_id>")
+def news_article(news_id):
+    connection = db()
+
+    # Count every article opening as a view
+    connection.execute(
+        "UPDATE news SET views = COALESCE(views, 0) + 1 WHERE id = ?",
+        (news_id,)
+    )
+    connection.commit()
+
+    article = connection.execute(
+        "SELECT * FROM news WHERE id = ?",
+        (news_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if article is None:
+        return "News article not found", 404
+
+    return render_template(
+        "news_article.html",
+        article=article
+    )
+
+
+@app.route("/news")
+def news():
+    connection = db()
+    articles = connection.execute("""
+        SELECT *
+        FROM news
+        ORDER BY created_at DESC
+    """).fetchall()
+    connection.close()
+
+    return render_template(
+        "news.html",
+        articles=articles,
+    )
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = ""
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not email or not password:
+            error = "Please enter your email address and password."
+        else:
+            connection = db()
+
+            user = connection.execute(
+                "SELECT id, name, email, password FROM users WHERE LOWER(email) = ?",
+                (email,)
+            ).fetchone()
+
+            connection.close()
+
+            if user and user["password"] == password:
+                session["user_id"] = user["id"]
+                session["user_name"] = user["name"]
+                session["user_email"] = user["email"]
+
+                return redirect(url_for("index"))
+
+            error = "Incorrect email or password."
+
+    return render_template(
+        "login.html",
+        error=error
+    )
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    message = ""
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not name or not email or not password:
+            message = "Please complete all fields."
+        elif len(password) < 6:
+            message = "Your password must be at least 6 characters."
+        else:
+            connection = db()
+
+            try:
+                cursor = connection.execute(
+                    """
+                    INSERT INTO users(name, email, password)
+                    VALUES (?, ?, ?)
+                    """,
+                    (name, email, password)
+                )
+
+                connection.commit()
+
+                user_id = cursor.lastrowid
+
+                connection.close()
+
+                # Automatically log the new user in
+                session["user_id"] = user_id
+                session["user_name"] = name
+                session["user_email"] = email
+
+                return redirect(url_for("index"))
+
+            except sqlite3.IntegrityError:
+                connection.close()
+                message = "An account with that email already exists."
+
+    return render_template("register.html", message=message)
+
+@app.route("/account")
+def account():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    connection = db()
+
+    user = connection.execute(
+        """
+        SELECT id, name, email
+        FROM users
+        WHERE id = ?
+        """,
+        (session["user_id"],)
+    ).fetchone()
+
+    connection.close()
+
+    if not user:
+        session.clear()
+        return redirect(url_for("login"))
+
+    return render_template(
+        "account.html",
+        user=user,
+    )
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
+@app.route("/play/<int:song_id>", methods=["POST"])
+def play(song_id):
+    connection = db()
+
+    song = connection.execute(
+        "SELECT * FROM songs WHERE id = ?",
+        (song_id,)
+    ).fetchone()
+
+    if not song:
+        connection.close()
+        return jsonify({"error": "Song not found"}), 404
+
+    connection.execute("""
+        UPDATE songs
+        SET plays = plays + 1
+        WHERE id = ?
+    """, (song_id,))
+
+    connection.commit()
+
+    updated = connection.execute(
+        "SELECT plays FROM songs WHERE id = ?",
+        (song_id,)
+    ).fetchone()
+
+    connection.close()
+
+    return jsonify({
+        "success": True,
+        "plays": updated["plays"],
+    })
+
+
+@app.route("/download/<int:song_id>")
+def download(song_id):
+    # Downloads require a registered and logged-in account.
+    if "user_id" not in session:
+        return redirect(url_for("login", next=request.path))
+    connection = db()
+
+    song = connection.execute(
+        "SELECT * FROM songs WHERE id = ?",
+        (song_id,)
+    ).fetchone()
+
+    if not song:
+        connection.close()
+        abort(404)
+
+    connection.execute("""
+        UPDATE songs
+        SET downloads = downloads + 1
+        WHERE id = ?
+    """, (song_id,))
+
+    connection.commit()
+    connection.close()
+
+    filename = Path(song["audio"]).name
+
+    return send_from_directory(
+        MUSIC_DIR,
+        filename,
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    error = ""
+
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session.clear()
+            session["admin"] = True
+            return redirect(url_for("admin"))
+
+        error = "Invalid admin login."
+
+    return render_template(
+        "admin_login.html",
+        error=error,
+    )
+
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("admin", None)
+    return redirect(url_for("index"))
+
+
+@app.route("/admin")
+@admin_required
+def admin():
+    connection = db()
+
+    songs = connection.execute("""
+        SELECT *
+        FROM songs
+        ORDER BY created_at DESC
+    """).fetchall()
+
+    articles = connection.execute("""
+        SELECT *
+        FROM news
+        ORDER BY created_at DESC
+    """).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "admin.html",
+        songs=songs,
+        articles=articles,
+    )
+
+
+@app.route("/admin/upload", methods=["GET", "POST"])
+@admin_required
+def admin_upload():
+    if request.method == "GET":
+        return render_template("admin_upload.html")
+
+    title = request.form.get("title", "").strip()
+    artist = request.form.get("artist", "").strip()
+    genre = request.form.get("genre", "Other").strip()
+    album = request.form.get("album", "").strip()
+
+    audio_file = request.files.get("audio")
+    cover_file = request.files.get("cover")
+
+    if not title or not artist or not audio_file or not audio_file.filename:
+        return "Title, artist and audio are required.", 400
+
+    audio_ext = Path(audio_file.filename).suffix.lower()
+
+    if audio_ext not in ALLOWED_AUDIO:
+        return (
+            f"Unsupported audio format: {audio_ext}. "
+            f"Allowed formats: {', '.join(sorted(ALLOWED_AUDIO))}"
+        ), 400
+
+    safe_audio = secure_filename(audio_file.filename)
+
+    if not safe_audio:
+        return "Invalid audio filename.", 400
+
+    # Prevent two uploads with the same filename from overwriting each other.
+    audio_stem = Path(safe_audio).stem
+    audio_suffix = Path(safe_audio).suffix
+    candidate = safe_audio
+    counter = 1
+
+    while (MUSIC_DIR / candidate).exists():
+        candidate = f"{audio_stem}-{counter}{audio_suffix}"
+        counter += 1
+
+    safe_audio = candidate
+    audio_path = MUSIC_DIR / safe_audio
+
+    try:
+        audio_file.save(audio_path)
+
+        cover_name = ""
+
+        if cover_file and cover_file.filename:
+            cover_ext = Path(cover_file.filename).suffix.lower()
+
+            if cover_ext in ALLOWED_IMAGE:
+                safe_cover = secure_filename(cover_file.filename)
+
+                if safe_cover:
+                    cover_stem = Path(safe_cover).stem
+                    cover_suffix = Path(safe_cover).suffix
+                    cover_candidate = safe_cover
+                    cover_counter = 1
+
+                    images_dir = BASE_DIR / "static" / "images"
+                    images_dir.mkdir(parents=True, exist_ok=True)
+
+                    while (images_dir / cover_candidate).exists():
+                        cover_candidate = (
+                            f"{cover_stem}-{cover_counter}{cover_suffix}"
+                        )
+                        cover_counter += 1
+
+                    cover_name = cover_candidate
+                    cover_path = images_dir / cover_name
+                    cover_file.save(cover_path)
+
+        connection = db()
+
+        connection.execute(
+            """
+            INSERT INTO songs(
+                title,
+                artist,
+                genre,
+                album,
+                cover,
+                audio
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                title,
+                artist,
+                genre,
+                album,
+                cover_name,
+                safe_audio,
+            ),
+        )
+
+        connection.commit()
+        connection.close()
+
+    except Exception as error:
+        try:
+            if audio_path.exists():
+                audio_path.unlink()
+        except Exception:
+            pass
+
+        print(f"ADMIN UPLOAD ERROR: {error}")
+        return f"Upload failed: {error}", 500
+
+    return redirect(url_for("admin"))
+
+
+
+
+
+# ============================================================
+# NEW ALBUM MANAGER
+# ============================================================
+
+def ensure_album_schema():
+    connection = db()
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS albums (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            artist TEXT NOT NULL,
+            genre TEXT DEFAULT 'Other',
+            cover TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    columns = {
+        row["name"]
+        for row in connection.execute(
+            "PRAGMA table_info(songs)"
+        ).fetchall()
+    }
+
+    if "album_id" not in columns:
+        connection.execute(
+            "ALTER TABLE songs ADD COLUMN album_id INTEGER"
+        )
+
+    if "track_number" not in columns:
+        connection.execute(
+            "ALTER TABLE songs ADD COLUMN track_number INTEGER DEFAULT 0"
+        )
+
+    # Give old songs with album text a proper album record.
+    old_albums = connection.execute("""
+        SELECT DISTINCT album
+        FROM songs
+        WHERE album IS NOT NULL
+          AND TRIM(album) != ''
+          AND (album_id IS NULL OR album_id = 0)
+    """).fetchall()
+
+    for row in old_albums:
+        album_name = row["album"].strip()
+
+        existing = connection.execute(
+            """
+            SELECT id
+            FROM albums
+            WHERE LOWER(title) = LOWER(?)
+            LIMIT 1
+            """,
+            (album_name,)
+        ).fetchone()
+
+        if existing:
+            album_id = existing["id"]
+        else:
+            song = connection.execute(
+                """
+                SELECT artist, genre, cover
+                FROM songs
+                WHERE album = ?
+                ORDER BY id
+                LIMIT 1
+                """,
+                (album_name,)
+            ).fetchone()
+
+            album_id = connection.execute(
+                """
+                INSERT INTO albums(title, artist, genre, cover)
+                VALUES (?, ?, ?, ?)
+                """,
+                (
+                    album_name,
+                    song["artist"] if song else "",
+                    song["genre"] if song else "Other",
+                    song["cover"] if song else "",
+                )
+            ).lastrowid
+
+        songs = connection.execute(
+            """
+            SELECT id
+            FROM songs
+            WHERE album = ?
+              AND (album_id IS NULL OR album_id = 0)
+            ORDER BY id
+            """,
+            (album_name,)
+        ).fetchall()
+
+        for position, song in enumerate(songs, start=1):
+            connection.execute(
+                """
+                UPDATE songs
+                SET album_id = ?, track_number = ?
+                WHERE id = ?
+                """,
+                (album_id, position, song["id"])
+            )
+
+    connection.commit()
+    connection.close()
+
+
+@app.route("/admin/albums")
+@admin_required
+def admin_albums():
+    ensure_album_schema()
+
+    connection = db()
+
+    albums = connection.execute("""
+        SELECT
+            a.*,
+            COUNT(s.id) AS track_count
+        FROM albums a
+        LEFT JOIN songs s
+            ON s.album_id = a.id
+        GROUP BY a.id
+        ORDER BY a.created_at DESC, a.id DESC
+    """).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "admin_albums.html",
+        albums=albums
+    )
+
+
+@app.route("/admin/albums/create", methods=["POST"])
+@admin_required
+def create_album():
+    ensure_album_schema()
+
+    title = request.form.get("album", "").strip()
+    artist = request.form.get("artist", "").strip()
+    genre = request.form.get("genre", "Other").strip()
+    cover_file = request.files.get("cover")
+
+    audio_files = [
+        file
+        for file in request.files.getlist("audio")
+        if file and file.filename
+    ]
+
+    if not title:
+        return "Album name is required.", 400
+
+    if not artist:
+        return "Artist name is required.", 400
+
+    if not audio_files:
+        return "Select at least one track.", 400
+
+    for audio in audio_files:
+        if Path(audio.filename).suffix.lower() not in ALLOWED_AUDIO:
+            return f"Unsupported audio format: {audio.filename}", 400
+
+    if not cover_file or not cover_file.filename:
+        return "Album artwork is required.", 400
+
+    cover_ext = Path(cover_file.filename).suffix.lower()
+
+    if cover_ext not in ALLOWED_IMAGE:
+        return "Unsupported artwork format.", 400
+
+    images_dir = BASE_DIR / "static" / "images" / "albums"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    MUSIC_DIR.mkdir(parents=True, exist_ok=True)
+
+    connection = None
+    saved_audio = []
+    saved_cover = None
+
+    try:
+        # Artwork
+        safe_cover = secure_filename(cover_file.filename)
+
+        if not safe_cover:
+            raise ValueError("Invalid artwork filename.")
+
+        stem = Path(safe_cover).stem
+        suffix = Path(safe_cover).suffix
+        candidate = safe_cover
+        counter = 1
+
+        while (images_dir / candidate).exists():
+            candidate = f"{stem}-{counter}{suffix}"
+            counter += 1
+
+        saved_cover = images_dir / candidate
+        cover_file.save(saved_cover)
+
+        cover_name = f"albums/{candidate}"
+
+        connection = db()
+
+        album_id = connection.execute(
+            """
+            INSERT INTO albums(title, artist, genre, cover)
+            VALUES (?, ?, ?, ?)
+            """,
+            (title, artist, genre, cover_name)
+        ).lastrowid
+
+        # Every selected file goes into THIS album.
+        for position, audio in enumerate(audio_files, start=1):
+
+            safe_audio = secure_filename(audio.filename)
+
+            if not safe_audio:
+                raise ValueError(
+                    f"Invalid filename: {audio.filename}"
+                )
+
+            stem = Path(safe_audio).stem
+            suffix = Path(safe_audio).suffix
+
+            candidate = safe_audio
+            counter = 1
+
+            while (MUSIC_DIR / candidate).exists():
+                candidate = f"{stem}-{counter}{suffix}"
+                counter += 1
+
+            audio_path = MUSIC_DIR / candidate
+            audio.save(audio_path)
+            saved_audio.append(audio_path)
+
+            song_title = Path(audio.filename).stem
+            song_title = song_title.replace("_", " ")
+            song_title = song_title.replace("-", " ")
+            song_title = " ".join(song_title.split())
+
+            if not song_title:
+                song_title = f"Track {position}"
+
+            connection.execute(
+                """
+                INSERT INTO songs(
+                    title,
+                    artist,
+                    genre,
+                    album,
+                    cover,
+                    audio,
+                    album_id,
+                    track_number
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    song_title,
+                    artist,
+                    genre,
+                    title,
+                    cover_name,
+                    candidate,
+                    album_id,
+                    position
+                )
+            )
+
+        connection.commit()
+        connection.close()
+        connection = None
+
+    except Exception as error:
+
+        print("CREATE ALBUM ERROR:", error)
+
+        if connection:
+            try:
+                connection.rollback()
+                connection.close()
+            except Exception:
+                pass
+
+        for audio_path in saved_audio:
+            try:
+                if audio_path.exists():
+                    audio_path.unlink()
+            except Exception:
+                pass
+
+        if saved_cover:
+            try:
+                if saved_cover.exists():
+                    saved_cover.unlink()
+            except Exception:
+                pass
+
+        return f"Album creation failed: {error}", 500
+
+    return redirect(url_for("edit_album_manager", album_id=album_id))
+
+
+@app.route("/admin/albums/<int:album_id>")
+@admin_required
+def edit_album_manager(album_id):
+    ensure_album_schema()
+
+    connection = db()
+
+    album = connection.execute(
+        """
+        SELECT *
+        FROM albums
+        WHERE id = ?
+        """,
+        (album_id,)
+    ).fetchone()
+
+    if not album:
+        connection.close()
+        return "Album not found.", 404
+
+    tracks = connection.execute(
+        """
+        SELECT *
+        FROM songs
+        WHERE album_id = ?
+        ORDER BY track_number ASC, id ASC
+        """,
+        (album_id,)
+    ).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "edit_album_manager.html",
+        album=album,
+        tracks=tracks
+    )
+
+
+@app.route("/admin/albums/<int:album_id>/delete", methods=["POST"])
+@admin_required
+def delete_album(album_id):
+    connection = db()
+
+    album = connection.execute(
+        "SELECT id FROM albums WHERE id = ?",
+        (album_id,)
+    ).fetchone()
+
+    if not album:
+        connection.close()
+        return "Album not found.", 404
+
+    # Delete every track belonging to this album
+    connection.execute(
+        "DELETE FROM songs WHERE album_id = ?",
+        (album_id,)
+    )
+
+    # Delete the album
+    connection.execute(
+        "DELETE FROM albums WHERE id = ?",
+        (album_id,)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin_albums"))
+
+@app.route("/admin/albums/<int:album_id>/save", methods=["POST"])
+@admin_required
+def save_album_manager(album_id):
+    ensure_album_schema()
+
+    title = request.form.get("album", "").strip()
+    artist = request.form.get("artist", "").strip()
+    genre = request.form.get("genre", "Other").strip()
+    cover_file = request.files.get("cover")
+
+    if not title or not artist:
+        return "Album name and artist are required.", 400
+
+    connection = db()
+
+    album = connection.execute(
+        "SELECT * FROM albums WHERE id = ?",
+        (album_id,)
+    ).fetchone()
+
+    if not album:
+        connection.close()
+        return "Album not found.", 404
+
+    cover_name = album["cover"]
+
+    try:
+
+        if cover_file and cover_file.filename:
+
+            ext = Path(cover_file.filename).suffix.lower()
+
+            if ext not in ALLOWED_IMAGE:
+                connection.close()
+                return "Unsupported artwork format.", 400
+
+            images_dir = BASE_DIR / "static" / "images" / "albums"
+            images_dir.mkdir(parents=True, exist_ok=True)
+
+            safe_cover = secure_filename(cover_file.filename)
+
+            stem = Path(safe_cover).stem
+            suffix = Path(safe_cover).suffix
+            candidate = safe_cover
+            counter = 1
+
+            while (images_dir / candidate).exists():
+                candidate = f"{stem}-{counter}{suffix}"
+                counter += 1
+
+            cover_file.save(images_dir / candidate)
+            cover_name = f"albums/{candidate}"
+
+        connection.execute(
+            """
+            UPDATE albums
+            SET title = ?,
+                artist = ?,
+                genre = ?,
+                cover = ?
+            WHERE id = ?
+            """,
+            (
+                title,
+                artist,
+                genre,
+                cover_name,
+                album_id
+            )
+        )
+
+        connection.execute(
+            """
+            UPDATE songs
+            SET album = ?,
+                artist = ?,
+                genre = ?,
+                cover = ?
+            WHERE album_id = ?
+            """,
+            (
+                title,
+                artist,
+                genre,
+                cover_name,
+                album_id
+            )
+        )
+
+        connection.commit()
+        connection.close()
+
+    except Exception as error:
+        connection.rollback()
+        connection.close()
+        return f"Album update failed: {error}", 500
+
+    return redirect(
+        url_for(
+            "edit_album_manager",
+            album_id=album_id
+        )
+    )
+
+
+@app.route("/admin/albums/<int:album_id>/add", methods=["POST"])
+@admin_required
+def add_album_tracks(album_id):
+    ensure_album_schema()
+
+    audio_files = [
+        file
+        for file in request.files.getlist("audio")
+        if file and file.filename
+    ]
+
+    if not audio_files:
+        return "Select at least one track.", 400
+
+    connection = db()
+
+    album = connection.execute(
+        "SELECT * FROM albums WHERE id = ?",
+        (album_id,)
+    ).fetchone()
+
+    if not album:
+        connection.close()
+        return "Album not found.", 404
+
+    last = connection.execute(
+        """
+        SELECT COALESCE(MAX(track_number), 0) AS max_track
+        FROM songs
+        WHERE album_id = ?
+        """,
+        (album_id,)
+    ).fetchone()
+
+    next_track = last["max_track"] + 1
+
+    saved = []
+
+    try:
+
+        for audio in audio_files:
+
+            ext = Path(audio.filename).suffix.lower()
+
+            if ext not in ALLOWED_AUDIO:
+                raise ValueError(
+                    f"Unsupported audio format: {audio.filename}"
+                )
+
+            safe_audio = secure_filename(audio.filename)
+
+            stem = Path(safe_audio).stem
+            suffix = Path(safe_audio).suffix
+
+            candidate = safe_audio
+            counter = 1
+
+            while (MUSIC_DIR / candidate).exists():
+                candidate = f"{stem}-{counter}{suffix}"
+                counter += 1
+
+            audio_path = MUSIC_DIR / candidate
+            audio.save(audio_path)
+            saved.append(audio_path)
+
+            title = Path(audio.filename).stem
+            title = title.replace("_", " ")
+            title = title.replace("-", " ")
+            title = " ".join(title.split())
+
+            connection.execute(
+                """
+                INSERT INTO songs(
+                    title,
+                    artist,
+                    genre,
+                    album,
+                    cover,
+                    audio,
+                    album_id,
+                    track_number
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    title,
+                    album["artist"],
+                    album["genre"],
+                    album["title"],
+                    album["cover"],
+                    candidate,
+                    album_id,
+                    next_track
+                )
+            )
+
+            next_track += 1
+
+        connection.commit()
+        connection.close()
+
+    except Exception as error:
+
+        connection.rollback()
+        connection.close()
+
+        for file in saved:
+            try:
+                if file.exists():
+                    file.unlink()
+            except Exception:
+                pass
+
+        return f"Tracks could not be added: {error}", 500
+
+    return redirect(
+        url_for(
+            "edit_album_manager",
+            album_id=album_id
+        )
+    )
+
+
+@app.route("/admin/albums/<int:album_id>/track/<int:song_id>/save", methods=["POST"])
+@admin_required
+def save_album_track(album_id, song_id):
+    ensure_album_schema()
+
+    title = request.form.get("title", "").strip()
+    artist = request.form.get("artist", "").strip()
+    genre = request.form.get("genre", "Other").strip()
+
+    if not title or not artist:
+        return "Title and artist are required.", 400
+
+    connection = db()
+
+    connection.execute(
+        """
+        UPDATE songs
+        SET title = ?,
+            artist = ?,
+            genre = ?
+        WHERE id = ?
+          AND album_id = ?
+        """,
+        (
+            title,
+            artist,
+            genre,
+            song_id,
+            album_id
+        )
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect(
+        url_for(
+            "edit_album_manager",
+            album_id=album_id
+        )
+    )
+
+
+@app.route("/admin/albums/<int:album_id>/reorder", methods=["POST"])
+@admin_required
+def reorder_album_manager(album_id):
+    ensure_album_schema()
+
+    data = request.get_json(silent=True) or {}
+    song_ids = data.get("song_ids", [])
+
+    if not isinstance(song_ids, list):
+        return {"success": False}, 400
+
+    connection = db()
+
+    for position, song_id in enumerate(song_ids, start=1):
+        connection.execute(
+            """
+            UPDATE songs
+            SET track_number = ?
+            WHERE id = ?
+              AND album_id = ?
+            """,
+            (
+                position,
+                song_id,
+                album_id
+            )
+        )
+
+    connection.commit()
+    connection.close()
+
+    return {"success": True}
+
+
+
+@app.route("/admin/albums/<int:album_id>/track/<int:song_id>/delete", methods=["POST"])
+@admin_required
+def delete_album_track(album_id, song_id):
+    ensure_album_schema()
+
+    connection = db()
+
+    song = connection.execute(
+        """
+        SELECT audio
+        FROM songs
+        WHERE id = ?
+          AND album_id = ?
+        """,
+        (
+            song_id,
+            album_id
+        )
+    ).fetchone()
+
+    if not song:
+        connection.close()
+        return "Track not found.", 404
+
+    audio_path = MUSIC_DIR / Path(song["audio"]).name
+
+    connection.execute(
+        """
+        DELETE FROM songs
+        WHERE id = ?
+          AND album_id = ?
+        """,
+        (
+            song_id,
+            album_id
+        )
+    )
+
+    # Renumber remaining tracks.
+    tracks = connection.execute(
+        """
+        SELECT id
+        FROM songs
+        WHERE album_id = ?
+        ORDER BY track_number ASC, id ASC
+        """,
+        (album_id,)
+    ).fetchall()
+
+    for position, track in enumerate(tracks, start=1):
+        connection.execute(
+            """
+            UPDATE songs
+            SET track_number = ?
+            WHERE id = ?
+            """,
+            (
+                position,
+                track["id"]
+            )
+        )
+
+    connection.commit()
+    connection.close()
+
+    try:
+        if audio_path.exists():
+            audio_path.unlink()
+    except Exception:
+        pass
+
+    return redirect(
+        url_for(
+            "edit_album_manager",
+            album_id=album_id
+        )
+    )
+
+
+@app.route("/admin/news", methods=["GET", "POST"])
+@admin_required
+def admin_news():
+    title = request.form.get("title", "").strip()
+    body = request.form.get("body", "").strip()
+
+    if not title or not body:
+        return "Title and body are required.", 400
+
+    connection = db()
+
+    connection.execute("""
+        INSERT INTO news(title, body)
+        VALUES (?, ?)
+    """, (title, body))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin"))
+
+
+@app.route("/admin/delete-song/<int:song_id>", methods=["POST"])
+@admin_required
+def delete_song(song_id):
+    connection = db()
+
+    song = connection.execute(
+        "SELECT audio FROM songs WHERE id = ?",
+        (song_id,)
+    ).fetchone()
+
+    if song:
+        audio_path = MUSIC_DIR / Path(song["audio"]).name
+
+        if audio_path.exists():
+            audio_path.unlink()
+
+        connection.execute(
+            "DELETE FROM songs WHERE id = ?",
+            (song_id,)
+        )
+
+        connection.commit()
+
+    connection.close()
+
+    return redirect(url_for("admin"))
+
+
+@app.route("/help")
+def help_page():
+    return render_template("help.html")
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
+
+
+@app.route("/report", methods=["GET", "POST"])
+def report():
+    if request.method == "POST":
+        report_type = request.form.get("type", "").strip()
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+
+        if not report_type or not subject or not message:
+            return render_template(
+                "report.html",
+                error="Please select a report type and complete the subject and message."
+            )
+
+        import os
+        import smtplib
+        from email.message import EmailMessage
+
+        smtp_user = os.getenv("SMTP_USER", "zimplugofficial@gmail.com")
+        smtp_password = os.getenv("SMTP_PASSWORD", "")
+        report_email = os.getenv("REPORT_EMAIL", "zimplugofficial@gmail.com")
+
+        if not smtp_password:
+            return render_template(
+                "report.html",
+                error="Email service is not configured yet. Please try again later."
+            )
+
+        email_message = EmailMessage()
+        email_message["Subject"] = f"ZimPlug Music Report: {subject}"
+        email_message["From"] = smtp_user
+        email_message["To"] = report_email
+
+        if email:
+            email_message["Reply-To"] = email
+
+        email_message.set_content(
+            f"""ZIMPLUG MUSIC REPORT
+
+Report Type: {report_type}
+Name: {name or "Not provided"}
+Email: {email or "Not provided"}
+
+Subject:
+{subject}
+
+Message:
+{message}
+"""
+        )
+
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+                smtp.login(smtp_user, smtp_password)
+                smtp.send_message(email_message)
+
+            return render_template(
+                "report.html",
+                success="Your report has been submitted successfully. Thank you for helping us improve ZimPlug Music."
+            )
+
+        except Exception:
+            return render_template(
+                "report.html",
+                error="We couldn't send your report right now. Please try again later."
+            )
+
+    return render_template("report.html")
+
+@app.route("/legal")
+def legal():
+    return render_template("legal.html")
+
+@app.route("/static/music/<path:filename>")
+def music_file(filename):
+    return send_from_directory(MUSIC_DIR, filename)
+
+
+if __name__ == "__main__":
+    app.run(
+        host="127.0.0.1",
+        port=5050,
+        debug=True,
+    )
+
+
+@app.route("/admin/news/delete/<int:news_id>", methods=["POST"])
+@admin_required
+def delete_news(news_id):
+    connection = db()
+
+    article = connection.execute(
+        "SELECT image FROM news WHERE id = ?",
+        (news_id,)
+    ).fetchone()
+
+    if article is None:
+        connection.close()
+        return "News article not found.", 404
+
+    connection.execute(
+        "DELETE FROM news WHERE id = ?",
+        (news_id,)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin_news"))
+
+@app.route("/admin/news/edit/<int:news_id>", methods=["GET", "POST"])
+@admin_required
+def edit_news(news_id):
+    connection = db()
+
+    article = connection.execute(
+        "SELECT * FROM news WHERE id = ?",
+        (news_id,)
+    ).fetchone()
+
+    if article is None:
+        connection.close()
+        return "News article not found", 404
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        body = request.form.get("body", "").strip()
+        image_file = request.files.get("image")
+
+        if not title or not body:
+            connection.close()
+            return render_template(
+                "edit_news.html",
+                article=article,
+                error="Please enter a title and article body."
+            )
+
+        image_name = article["image"] or ""
+
+        if image_file and image_file.filename:
+            from werkzeug.utils import secure_filename
+            import os
+
+            filename = secure_filename(image_file.filename)
+
+            if filename:
+                extension = Path(filename).suffix.lower()
+
+                allowed_extensions = {
+                    ".jpg",
+                    ".jpeg",
+                    ".png",
+                    ".webp"
+                }
+
+                if extension not in allowed_extensions:
+                    connection.close()
+                    return render_template(
+                        "edit_news.html",
+                        article=article,
+                        error="Please upload a JPG, PNG or WebP image."
+                    )
+
+                news_dir = Path(app.static_folder) / "images" / "news"
+                news_dir.mkdir(parents=True, exist_ok=True)
+
+                # Give replacement images unique names
+                import uuid
+                image_name = f"{uuid.uuid4().hex}{extension}"
+
+                image_file.save(news_dir / image_name)
+
+                # Remove old image after successful replacement
+                old_image = article["image"] or ""
+
+                if old_image:
+                    old_path = news_dir / Path(old_image).name
+
+                    if old_path.exists():
+                        try:
+                            old_path.unlink()
+                        except OSError:
+                            pass
+
+        connection.execute(
+            """
+            UPDATE news
+            SET title = ?, body = ?, image = ?
+            WHERE id = ?
+            """,
+            (title, body, image_name, news_id)
+        )
+
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("admin_news"))
+
+    connection.close()
+
+    return render_template(
+        "edit_news.html",
+        article=article
+    )

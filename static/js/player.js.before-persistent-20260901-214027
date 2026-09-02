@@ -1,0 +1,183 @@
+(function () {
+
+    const audio = document.getElementById("audio");
+    const player = document.getElementById("player");
+
+    const title = document.getElementById("playerTitle");
+    const artist = document.getElementById("playerArtist");
+    const art = document.getElementById("playerArt");
+
+    const playButton = document.getElementById("playButton");
+    const previousButton = document.getElementById("previousButton");
+    const nextButton = document.getElementById("nextButton");
+
+    let queue = [];
+    let currentIndex = -1;
+
+    function getRows() {
+        return Array.from(
+            document.querySelectorAll(".song-row")
+        );
+    }
+
+    function playSong(row) {
+
+        if (!row) return;
+
+        const id = row.dataset.id;
+        const audioFile = row.dataset.audio;
+
+        if (!audioFile) return;
+
+        queue = getRows();
+
+        currentIndex = queue.indexOf(row);
+
+        audio.src = audioFile;
+
+        title.textContent = row.dataset.title || "Unknown Track";
+        artist.textContent = row.dataset.artist || "Unknown Artist";
+
+        if (row.dataset.cover) {
+            art.innerHTML =
+                '<img src="' +
+                row.dataset.cover +
+                '" alt="">';
+        } else {
+            art.textContent = "♪";
+        }
+
+        player.classList.add("visible");
+
+        document.querySelectorAll(".song-row.playing")
+            .forEach(function (item) {
+                item.classList.remove("playing");
+            });
+
+        row.classList.add("playing");
+
+        audio.play()
+            .then(function () {
+
+                playButton.textContent = "❚❚";
+
+                fetch("/play/" + id, {
+                    method: "POST"
+                }).catch(function () {});
+
+            })
+            .catch(function (error) {
+                console.error("Playback failed:", error);
+            });
+    }
+
+
+    function togglePlay() {
+
+        if (!audio.src) {
+
+            const rows = getRows();
+
+            if (rows.length) {
+                playSong(rows[0]);
+            }
+
+            return;
+        }
+
+        if (audio.paused) {
+
+            audio.play();
+            playButton.textContent = "❚❚";
+
+        } else {
+
+            audio.pause();
+            playButton.textContent = "▶";
+
+        }
+
+    }
+
+
+    function nextSong() {
+
+        if (!queue.length) {
+            queue = getRows();
+        }
+
+        if (!queue.length) return;
+
+        currentIndex++;
+
+        if (currentIndex >= queue.length) {
+            currentIndex = 0;
+        }
+
+        playSong(queue[currentIndex]);
+    }
+
+
+    function previousSong() {
+
+        if (!queue.length) {
+            queue = getRows();
+        }
+
+        if (!queue.length) return;
+
+        currentIndex--;
+
+        if (currentIndex < 0) {
+            currentIndex = queue.length - 1;
+        }
+
+        playSong(queue[currentIndex]);
+    }
+
+
+    document.addEventListener("click", function (event) {
+
+        const button = event.target.closest(".song-play");
+
+        if (!button) return;
+
+        const row = button.closest(".song-row");
+
+        playSong(row);
+
+    });
+
+
+    playButton.addEventListener(
+        "click",
+        togglePlay
+    );
+
+    nextButton.addEventListener(
+        "click",
+        nextSong
+    );
+
+    previousButton.addEventListener(
+        "click",
+        previousSong
+    );
+
+
+    audio.addEventListener("play", function () {
+        playButton.textContent = "❚❚";
+    });
+
+
+    audio.addEventListener("pause", function () {
+        playButton.textContent = "▶";
+    });
+
+
+    audio.addEventListener("ended", function () {
+        nextSong();
+    });
+
+
+})();

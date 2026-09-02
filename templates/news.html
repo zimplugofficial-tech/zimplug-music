@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.news-page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 50px 24px 80px;
+}
+
+.news-heading {
+    padding-bottom: 25px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.news-eyebrow {
+    margin-bottom: 9px;
+    color: #d4af37;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+}
+
+.news-heading h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 34px;
+    line-height: 1.15;
+    letter-spacing: -.025em;
+}
+
+.news-heading p {
+    max-width: 600px;
+    margin: 10px 0 0;
+    color: #858585;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* FEATURED STORY */
+
+.news-featured {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.45fr .55fr;
+    min-height: 390px;
+    margin-bottom: 42px;
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+    text-decoration: none;
+    overflow: hidden;
+}
+
+.news-featured-image {
+    position: relative;
+    min-height: 390px;
+    background: #101010;
+    overflow: hidden;
+}
+
+.news-featured-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(5,5,5,0) 45%,
+        rgba(5,5,5,.65) 100%
+    );
+    pointer-events: none;
+}
+
+.news-featured-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .5s ease;
+}
+
+.news-featured:hover .news-featured-image img {
+    transform: scale(1.035);
+}
+
+.news-featured-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 42px 38px;
+    background: #0b0b0b;
+    border-left: 1px solid rgba(255,255,255,.06);
+}
+
+.news-label {
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    margin-bottom: 16px;
+}
+
+.news-featured-content h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 28px;
+    line-height: 1.18;
+    letter-spacing: -.025em;
+}
+
+.news-featured-date {
+    margin-top: 18px;
+    color: #858585;
+    font-size: 11px;
+}
+
+.news-featured-read {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 28px;
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.news-featured-read::after {
+    content: "";
+    width: 24px;
+    height: 1px;
+    margin-left: 10px;
+    background: #d4af37;
+}
+
+.news-featured:hover {
+    border-color: rgba(212,175,55,.45);
+}
+
+@media (max-width: 850px) {
+    .news-featured {
+        grid-template-columns: 1fr;
+    }
+
+    .news-featured-image {
+        min-height: 300px;
+    }
+
+    .news-featured-content {
+        border-left: 0;
+        border-top: 1px solid rgba(255,255,255,.06);
+    }
+}
+
+/* NEWS GRID */
+
+.news-section-title {
+    margin-bottom: 18px;
+    color: #fff;
+    font-size: 17px;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.news-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #101010;
+    border: 1px solid rgba(255,255,255,.07);
+    color: #fff;
+    text-decoration: none;
+    overflow: hidden;
+    transition: border-color .2s ease, transform .2s ease;
+}
+
+.news-card:hover {
+    border-color: rgba(212,175,55,.55);
+    transform: translateY(-2px);
+}
+
+.news-card-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #151515;
+}
+
+.news-card-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .35s ease;
+}
+
+.news-card:hover .news-card-image img {
+    transform: scale(1.025);
+}
+
+.news-card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 21px;
+}
+
+.news-card-content h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 17px;
+    line-height: 1.35;
+}
+
+.news-card-date {
+    margin-top: 13px;
+    color: #666;
+    font-size: 11px;
+}
+
+.news-read {
+    margin-top: auto;
+    padding-top: 20px;
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.news-empty {
+    padding: 70px 20px;
+    text-align: center;
+    background: #101010;
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.news-empty h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 20px;
+}
+
+.news-empty p {
+    margin: 8px 0 0;
+    color: #858585;
+    font-size: 13px;
+}
+
+@media (max-width: 850px) {
+    .news-featured {
+        grid-template-columns: 1fr;
+    }
+
+    .news-featured-image {
+        min-height: 280px;
+    }
+
+    .news-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .news-page {
+        padding: 35px 16px 60px;
+    }
+
+    .news-heading h1 {
+        font-size: 28px;
+    }
+
+    .news-featured-content {
+        padding: 25px;
+    }
+
+    .news-featured-content h2 {
+        font-size: 22px;
+    }
+
+    .news-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<section class="news-page">
+
+    <header class="news-heading">
+        <div class="news-eyebrow">ZIMPLUG NEWS</div>
+        <h1>Latest News</h1>
+        <p>Music, artists, releases and stories from Zimbabwe and beyond.</p>
+    </header>
+
+    {% if articles %}
+
+        {% set featured = articles[0] %}
+
+        <a href="{{ url_for('news_article', news_id=featured['id']) }}"
+           class="news-featured">
+
+            {% if featured['image'] %}
+            <div class="news-featured-image">
+                <img
+                    src="{{ url_for('static', filename='images/news/' ~ featured['image']) }}"
+                    alt="{{ featured['title'] }}"
+                >
+            </div>
+            {% endif %}
+
+            <div class="news-featured-content">
+                <div class="news-label">FEATURED STORY</div>
+
+                <h2>{{ featured['title'] }}</h2>
+
+                <div class="news-featured-date">
+                    {{ featured['created_at'] }}
+                </div>
+
+                <div class="news-featured-read">
+                    READ STORY →
+                </div>
+            </div>
+
+        </a>
+
+        {% if articles|length > 1 %}
+
+        <h2 class="news-section-title">More News</h2>
+
+        <div class="news-grid">
+
+            {% for article in articles[1:] %}
+
+            <a href="{{ url_for('news_article', news_id=article['id']) }}"
+               class="news-card">
+
+                {% if article['image'] %}
+                <div class="news-card-image">
+                    <img
+                        src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+                        alt="{{ article['title'] }}"
+                    >
+                </div>
+                {% endif %}
+
+                <div class="news-card-content">
+
+                    <div class="news-label">
+                        ZIMPLUG NEWS
+                    </div>
+
+                    <h2>{{ article['title'] }}</h2>
+
+                    <div class="news-card-date">
+                        {{ article['created_at'] }}
+                    </div>
+
+                    <span class="news-read">
+                        READ ARTICLE →
+                    </span>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+    {% else %}
+
+        <div class="news-empty">
+            <h2>No news yet</h2>
+            <p>Check back soon for the latest stories.</p>
+        </div>
+    {% endif %}
+
+</section>
+
+{% endblock %}

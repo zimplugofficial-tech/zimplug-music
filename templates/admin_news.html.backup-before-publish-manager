@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main class="admin-page">
+
+    <section class="admin-hero">
+
+        <span class="eyebrow">ZIMPLUG ADMIN</span>
+
+        <h1>Manage <span>News.</span></h1>
+
+        <p>Publish, edit and manage ZimPlug Music news articles.</p>
+
+    </section>
+
+
+    {% if error %}
+
+    <div class="admin-error">
+        {{ error }}
+    </div>
+
+    {% endif %}
+
+
+    <!-- ADD NEWS -->
+
+    <section class="admin-panel">
+
+        <div class="panel-heading">
+
+            <div>
+
+                <span class="eyebrow">PUBLISH</span>
+
+                <h2>Add News</h2>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              class="submit-form">
+
+            <label>
+
+                <span>News title</span>
+
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Enter news title"
+                    required
+                >
+
+            </label>
+
+
+            <label>
+
+                <span>News picture</span>
+
+                <input
+                    type="file"
+                    name="image"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+
+                <small>
+                    Upload a JPG, PNG or WebP image.
+                </small>
+
+            </label>
+
+
+            <label>
+
+                <span>Article</span>
+
+                <textarea
+                    name="body"
+                    rows="12"
+                    placeholder="Write your news article..."
+                    required
+                ></textarea>
+
+            </label>
+
+
+            <button type="submit" class="gold-button">
+                PUBLISH NEWS →
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- MANAGE NEWS -->
+
+    <section class="admin-panel">
+
+        <div class="panel-heading">
+
+            <div>
+
+                <span class="eyebrow">LIBRARY</span>
+
+                <h2>Published News</h2>
+
+            </div>
+
+            <span class="library-total">
+                {{ articles|length }} ARTICLES
+            </span>
+
+        </div>
+
+
+        {% for article in articles %}
+
+        <article class="admin-news-item">
+
+
+            {% if article.image %}
+
+            <img
+                src="{{ url_for('static', filename='images/news/' + article.image) }}"
+                alt="{{ article.title }}"
+            >
+
+            {% endif %}
+
+
+            <div class="admin-news-details">
+
+                <strong>
+                    {{ article.title }}
+                </strong>
+
+
+                <p>
+
+                    {{ article.body[:180] }}
+
+                    {% if article.body|length > 180 %}
+                    ...
+                    {% endif %}
+
+                </p>
+
+
+                <small>
+                    Published: {{ article.created_at }}
+                </small>
+
+
+                <div class="admin-news-metrics">
+
+                    <span>
+                        👁 {{ article.views or 0 }} views
+                    </span>
+
+                </div>
+
+
+                <div class="admin-news-actions">
+
+                    <a
+                        href="{{ url_for('news_article', news_id=article.id) }}"
+                        class="admin-action"
+                        target="_blank"
+                    >
+                        VIEW →
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('edit_news', news_id=article.id) }}"
+                        class="admin-action"
+                    >
+                        EDIT
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <strong>No news published yet.</strong>
+
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</main>
+
+{% endblock %}

@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Help Center | ZimPlug Music</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: #050505;
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .help-page {
+            min-height: 100vh;
+            background: #050505;
+        }
+
+        .help-container {
+            width: min(1100px, 92%);
+            margin: auto;
+            padding: 70px 0 100px;
+        }
+
+        /* HEADER */
+
+        .help-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        .help-logo img {
+            width: 105px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        .help-nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        .help-nav a {
+            color: #777;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            transition: color .2s ease;
+        }
+
+        .help-nav a:hover {
+            color: #d4af37;
+        }
+
+        /* HERO */
+
+        .help-header {
+            text-align: center;
+            max-width: 780px;
+            margin: 90px auto 75px;
+        }
+
+        .help-eyebrow {
+            color: #d4af37;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 4px;
+        }
+
+        .help-header h1 {
+            margin: 18px 0;
+            font-size: clamp(45px, 7vw, 78px);
+            line-height: .95;
+            letter-spacing: -3px;
+        }
+
+        .help-header h1 span {
+            color: #d4af37;
+        }
+
+        .help-header p {
+            max-width: 680px;
+            margin: auto;
+            color: #858585;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        /* SEARCH */
+
+        .help-search {
+            max-width: 650px;
+            margin: 35px auto 0;
+            display: flex;
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .help-search input {
+            flex: 1;
+            min-width: 0;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: #fff;
+            padding: 17px 18px;
+            font-size: 14px;
+        }
+
+        .help-search input::placeholder {
+            color: #555;
+        }
+
+        .help-search button {
+            border: 0;
+            background: #d4af37;
+            color: #050505;
+            padding: 0 24px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        /* SECTIONS */
+
+        .help-section {
+            margin-top: 70px;
+            padding-top: 45px;
+            border-top: 1px solid rgba(255,255,255,.07);
+        }
+
+        .help-heading {
+            margin-bottom: 25px;
+        }
+
+        .help-heading span {
+            color: #d4af37;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .help-heading h2 {
+            margin: 10px 0 0;
+            font-size: 28px;
+            letter-spacing: -.5px;
+        }
+
+        /* CARDS */
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .help-card {
+            padding: 28px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 12px;
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                background .2s ease;
+        }
+
+        .help-card:hover {
+            transform: translateY(-3px);
+            background: #0d0d0d;
+            border-color: rgba(212,175,55,.4);
+        }
+
+        .help-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: rgba(212,175,55,.09);
+            color: #d4af37;
+            font-size: 17px;
+        }
+
+        .help-card h3 {
+            margin: 0 0 10px;
+            font-size: 17px;
+        }
+
+        .help-card p {
+            margin: 0;
+            color: #858585;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        /* FAQ */
+
+        .faq {
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        .faq details {
+            border-top: 1px solid rgba(255,255,255,.07);
+        }
+
+        .faq summary {
+            padding: 22px 5px;
+            cursor: pointer;
+            list-style: none;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .faq summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .faq summary::after {
+            content: "+";
+            float: right;
+            color: #d4af37;
+            font-size: 19px;
+        }
+
+        .faq details[open] summary::after {
+            content: "−";
+        }
+
+        .faq-answer {
+            padding: 0 5px 23px;
+            max-width: 820px;
+            color: #858585;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* NOTE */
+
+        .help-note {
+            padding: 25px;
+            margin-top: 25px;
+            background: #0a0a0a;
+            border-left: 3px solid #d4af37;
+            color: #858585;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        /* CONTACT */
+
+        .help-contact {
+            padding: 38px;
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(212,175,55,.12),
+                    transparent 35%
+                ),
+                #0a0a0a;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 14px;
+        }
+
+        .help-contact h2 {
+            margin: 0 0 12px;
+            font-size: 27px;
+        }
+
+        .help-contact p {
+            max-width: 700px;
+            margin: 0;
+            color: #858585;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .help-button {
+            display: inline-block;
+            margin-top: 22px;
+            padding: 13px 20px;
+            background: #d4af37;
+            color: #050505;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        /* FOOTER */
+
+        .help-footer {
+            padding-top: 50px;
+            margin-top: 75px;
+            border-top: 1px solid rgba(255,255,255,.07);
+            text-align: center;
+        }
+
+        .help-footer img {
+            width: 100px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        .help-footer-brand {
+            margin-top: 10px;
+            color: #d4af37;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .help-footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .help-footer-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 700;
+            transition: color .2s ease;
+        }
+
+        .help-footer-links a:hover {
+            color: #d4af37;
+        }
+
+        .help-copy {
+            margin-top: 25px;
+            color: #3f3f3f;
+            font-size: 10px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+            .help-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .help-container {
+                padding-top: 35px;
+            }
+
+            .help-top {
+                align-items: flex-start;
+            }
+
+            .help-nav {
+                gap: 12px;
+            }
+
+            .help-nav a:nth-child(3) {
+                display: none;
+            }
+
+            .help-header {
+                margin-top: 65px;
+            }
+
+            .help-header h1 {
+                letter-spacing: -2px;
+            }
+
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .help-search button {
+                padding: 0 17px;
+            }
+
+            .help-contact {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="help-page">
+
+    <main class="help-container">
+
+        <!-- TOP NAVIGATION -->
+
+        <div class="help-top">
+
+            <a href="/" class="help-logo">
+                <img
+                    src="{{ url_for('static', filename='images/logo.PNG') }}"
+                    alt="ZimPlug Music"
+                >
+            </a>
+
+            <nav class="help-nav">
+                <a href="/">HOME</a>
+                <a href="/music">MUSIC</a>
+                <a href="/news">NEWS</a>
+            </nav>
+
+        </div>
+
+
+        <!-- HERO -->
+
+        <header class="help-header">
+
+            <span class="help-eyebrow">
+                ZIMPLUG MUSIC SUPPORT
+            </span>
+
+            <h1>
+                How can we<br>
+                <span>help?</span>
+            </h1>
+
+            <p>
+                Everything you need to know about discovering music,
+                playing songs, downloading music, accounts, artists,
+                copyright and using ZimPlug Music.
+            </p>
+
+            <div class="help-search">
+
+                <input
+                    type="text"
+                    id="helpSearch"
+                    placeholder="Search the Help Center..."
+                    autocomplete="off"
+                >
+
+                <button type="button" onclick="searchHelp()">
+                    SEARCH
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- QUICK HELP -->
+
+        <section class="help-section">
+
+            <div class="help-heading">
+                <span>QUICK HELP</span>
+                <h2>Start here</h2>
+            </div>
+
+            <div class="help-grid">
+
+                <div class="help-card">
+                    <div class="help-icon">♪</div>
+                    <h3>Find Music</h3>
+                    <p>
+                        Browse songs, artists, genres, trending music
+                        and featured releases across ZimPlug Music.
+                    </p>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">▶</div>
+                    <h3>Play Music</h3>
+                    <p>
+                        Select play on a song to start listening.
+                        The player lets you continue browsing while
+                        your music keeps playing.
+                    </p>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">↓</div>
+                    <h3>Download Music</h3>
+                    <p>
+                        Songs with downloads enabled can be downloaded
+                        directly to your phone, tablet or computer.
+                    </p>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">◎</div>
+                    <h3>Account</h3>
+                    <p>
+                        Learn about registration, login and keeping
+                        your ZimPlug Music account secure.
+                    </p>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">★</div>
+                    <h3>Artists</h3>
+                    <p>
+                        Discover artist profiles, releases, genres
+                        and information about the music you love.
+                    </p>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">!</div>
+                    <h3>Report an Issue</h3>
+                    <p>
+                        Report broken downloads, incorrect information,
+                        copyright concerns or other problems.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- MUSIC -->
+
+        <section class="help-section">
+
+            <div class="help-heading">
+                <span>MUSIC & DISCOVERY</span>
+                <h2>Listening on ZimPlug</h2>
+            </div>
+
+            <div class="faq">
+
+                <details>
+                    <summary>How do I find a song?</summary>
+
+                    <div class="faq-answer">
+                        Go to the Music page and browse available
+                        releases. You can discover music by genre,
+                        artist, trending releases and featured music.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>How do I play a song?</summary>
+
+                    <div class="faq-answer">
+                        Select the play button on the song you want
+                        to hear. The ZimPlug Music player will load
+                        the track and begin playback.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>Can I browse while music is playing?</summary>
+
+                    <div class="faq-answer">
+                        Yes. ZimPlug Music is designed around music
+                        discovery, allowing you to continue exploring
+                        the website while your current track plays.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>How do I download a song?</summary>
+
+                    <div class="faq-answer">
+                        Open the song or release and select Download
+                        when the option is available. Your browser
+                        will save the music file to your device.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>Why can't I download a particular song?</summary>
+
+                    <div class="faq-answer">
+                        Not every release necessarily has downloads
+                        enabled. If a download that should be available
+                        is broken, please report the problem.
+                    </div>
+                </details>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCOUNT -->
+
+        <section class="help-section">
+
+            <div class="help-heading">
+                <span>ACCOUNT</span>
+                <h2>Your ZimPlug account</h2>
+            </div>
+
+            <div class="faq">
+
+                <details>
+                    <summary>Do I need an account to discover music?</summary>
+
+                    <div class="faq-answer">
+                        Music discovery may be available without an
+                        account. Some features may require registration
+                        as the platform develops.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>What if I cannot log in?</summary>
+
+                    <div class="faq-answer">
+                        Check that you are using the correct email
+                        address and password. If you still cannot access
+                        your account, use the available support options.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>How should I protect my account?</summary>
+
+                    <div class="faq-answer">
+                        Use a strong password that you do not reuse
+                        elsewhere. Never share your password or account
+                        verification information with another person.
+                    </div>
+                </details>
+
+            </div>
+
+        </section>
+
+
+        <!-- ARTISTS -->
+
+        <section class="help-section">
+
+            <div class="help-heading">
+                <span>ARTISTS</span>
+                <h2>Artist & creator information</h2>
+            </div>
+
+            <div class="faq">
+
+                <details>
+                    <summary>What can I find on an artist profile?</summary>
+
+                    <div class="faq-answer">
+                        Artist profiles can include the artist name,
+                        biography, genre, location, artwork and music
+                        releases available on ZimPlug Music.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>Who owns the music on ZimPlug?</summary>
+
+                    <div class="faq-answer">
+                        Music remains owned by its respective copyright
+                        owners. Uploading or distributing music through
+                        ZimPlug Music does not automatically transfer
+                        copyright ownership.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>Can an artist report incorrect information?</summary>
+
+                    <div class="faq-answer">
+                        Yes. Incorrect artist names, song information,
+                        artwork or other content can be reported for
+                        review.
+                    </div>
+                </details>
+
+            </div>
+
+        </section>
+
+
+        <!-- COPYRIGHT -->
+
+        <section class="help-section">
+
+            <div class="help-heading">
+                <span>SAFETY & RIGHTS</span>
+                <h2>Copyright & reporting</h2>
+            </div>
+
+            <div class="faq">
+
+                <details>
+                    <summary>
+                        I believe my music is being used without permission.
+                    </summary>
+
+                    <div class="faq-answer">
+                        Use the Report page to provide details about
+                        the copyrighted work and the ZimPlug Music
+                        page or material involved.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>
+                        I found inappropriate or illegal content.
+                    </summary>
+
+                    <div class="faq-answer">
+                        Report the content and provide the page address
+                        and a clear description of the issue. Do not
+                        attempt to interfere with another user's account
+                        or device.
+                    </div>
+                </details>
+
+                <details>
+                    <summary>
+                        I found a security problem.
+                    </summary>
+
+                    <div class="faq-answer">
+                        Report security concerns responsibly. Do not
+                        attempt to access, modify or delete information
+                        that does not belong to you.
+                    </div>
+                </details>
+
+            </div>
+
+        </section>
+
+
+        <!-- IMPORTANT -->
+
+        <section class="help-section">
+
+            <div class="help-heading">
+                <span>IMPORTANT</span>
+                <h2>Before contacting us</h2>
+            </div>
+
+            <div class="help-note">
+                Please never send your password, authentication codes,
+                private keys or other sensitive account information
+                when requesting help. For technical problems, include
+                the affected page, song or feature and explain what
+                happened.
+            </div>
+
+        </section>
+
+
+        <!-- CONTACT -->
+
+        <section class="help-section">
+
+            <div class="help-contact">
+
+                <h2>Still need help?</h2>
+
+                <p>
+                    If you cannot find the answer you need, report the
+                    problem with as much useful information as possible.
+                    This helps the ZimPlug Music team investigate and
+                    resolve the issue.
+                </p>
+
+                <a href="/report" class="help-button">
+                    REPORT AN ISSUE →
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer class="help-footer">
+
+            <a href="/">
+                <img
+                    src="{{ url_for('static', filename='images/logo.PNG') }}"
+                    alt="ZimPlug Music"
+                >
+            </a>
+
+            <div class="help-footer-brand">
+                ZIMPLUG OFFICIAL
+            </div>
+
+            <div class="help-footer-links">
+                <a href="/">HOME</a>
+                <a href="/music">MUSIC</a>
+                <a href="/news">NEWS</a>
+                <a href="/privacy">PRIVACY POLICY</a>
+                <a href="/report">REPORT</a>
+                <a href="/legal">LEGAL & DMCA</a>
+            </div>
+
+            <div class="help-copy">
+                © 2026 ZimPlug Music. All rights reserved.
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script>
+
+function searchHelp() {
+
+    const input = document.getElementById("helpSearch");
+    const query = input.value.toLowerCase().trim();
+
+    const questions = document.querySelectorAll(".faq details");
+
+    questions.forEach(function(item) {
+
+        const text = item.innerText.toLowerCase();
+
+        if (!query || text.includes(query)) {
+            item.style.display = "";
+        } else {
+            item.style.display = "none";
+        }
+
+    });
+
+}
+
+document
+    .getElementById("helpSearch")
+    .addEventListener("input", searchHelp);
+
+</script>
+
+</body>
+</html>

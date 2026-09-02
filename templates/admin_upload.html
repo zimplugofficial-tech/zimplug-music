@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="zp-admin-upload">
+
+    <!-- HEADER -->
+    <div class="zp-page-header">
+        <div>
+            <div class="zp-kicker">ADMINISTRATION</div>
+            <h1>Upload Single Song</h1>
+            <p>Add a new track to the ZimPlug Music library.</p>
+        </div>
+
+        <a href="{{ url_for('admin') }}" class="zp-back">
+            ← Admin
+        </a>
+    </div>
+
+
+    <!-- FORM -->
+    <form
+        action="{{ url_for('admin_upload') }}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="zp-upload-form"
+    >
+
+        <!-- SONG DETAILS -->
+        <section class="zp-card">
+
+            <div class="zp-card-header">
+                <div class="zp-card-number">01</div>
+
+                <div>
+                    <h2>Song Details</h2>
+                    <p>Enter the basic information for this release.</p>
+                </div>
+            </div>
+
+            <div class="zp-fields">
+
+                <div class="zp-field zp-full">
+                    <label for="title">
+                        Song Title <span>*</span>
+                    </label>
+
+                    <input
+                        id="title"
+                        name="title"
+                        type="text"
+                        placeholder="e.g. Hello Africa"
+                        required
+                    >
+                </div>
+
+
+                <div class="zp-field">
+                    <label for="artist">
+                        Artist <span>*</span>
+                    </label>
+
+                    <input
+                        id="artist"
+                        name="artist"
+                        type="text"
+                        placeholder="Artist name"
+                        required
+                    >
+                </div>
+
+
+                <div class="zp-field">
+                    <label for="genre">Genre</label>
+
+                    <select id="genre" name="genre">
+                        <option value="Other">Other</option>
+                        <option value="Afrobeat">Afrobeat</option>
+                        <option value="Amapiano">Amapiano</option>
+                        <option value="Hip Hop">Hip Hop</option>
+                        <option value="Dancehall">Dancehall</option>
+                        <option value="Gospel">Gospel</option>
+                        <option value="Zimdancehall">Zimdancehall</option>
+                        <option value="R&B">R&B</option>
+                        <option value="Afropop">Afropop</option>
+                        <option value="House">House</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Reggae">Reggae</option>
+                    </select>
+                </div>
+
+
+                <div class="zp-field zp-full">
+                    <label for="album">
+                        Album <small>Optional</small>
+                    </label>
+
+                    <input
+                        id="album"
+                        name="album"
+                        type="text"
+                        placeholder="Album name"
+                    >
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- AUDIO -->
+        <section class="zp-card">
+
+            <div class="zp-card-header">
+                <div class="zp-card-number">02</div>
+
+                <div>
+                    <h2>Audio File</h2>
+                    <p>Upload the original audio file for the track.</p>
+                </div>
+            </div>
+
+
+            <label class="zp-file-box">
+
+                <input
+                    type="file"
+                    name="audio"
+                    accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac"
+                    required
+                >
+
+                <div class="zp-file-icon">♪</div>
+
+                <div class="zp-file-content">
+                    <strong>Choose audio file</strong>
+                    <span>MP3, WAV, M4A, AAC, OGG or FLAC</span>
+                </div>
+
+                <div class="zp-file-action">
+                    Browse
+                </div>
+
+            </label>
+
+        </section>
+
+
+        <!-- ARTWORK -->
+        <section class="zp-card">
+
+            <div class="zp-card-header">
+                <div class="zp-card-number">03</div>
+
+                <div>
+                    <h2>Artwork</h2>
+                    <p>Upload the artwork that will represent this song.</p>
+                </div>
+            </div>
+
+
+            <label class="zp-file-box zp-artwork-box">
+
+                <input
+                    type="file"
+                    name="cover"
+                    accept="image/*,.jpg,.jpeg,.png,.webp"
+                >
+
+                <div class="zp-file-icon">▣</div>
+
+                <div class="zp-file-content">
+                    <strong>Choose cover artwork</strong>
+                    <span>JPG, PNG or WebP recommended</span>
+                </div>
+
+                <div class="zp-file-action">
+                    Browse
+                </div>
+
+            </label>
+
+        </section>
+
+
+        <!-- ACTION BAR -->
+        <div class="zp-submit-bar">
+
+            <a href="{{ url_for('admin') }}" class="zp-cancel">
+                Cancel
+            </a>
+
+            <button type="submit" class="zp-submit">
+                <span>Upload Song</span>
+                <b>→</b>
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<style>
+
+/* =========================================
+   ZIMPLUG ADMIN UPLOAD
+========================================= */
+
+.zp-admin-upload {
+    width: min(100% - 40px, 900px);
+    margin: 0 auto;
+    padding: 42px 0 80px;
+}
+
+
+/* HEADER */
+
+.zp-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.zp-kicker {
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.zp-page-header h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 30px;
+    line-height: 1.15;
+    font-weight: 750;
+    letter-spacing: -0.5px;
+}
+
+.zp-page-header p {
+    margin: 8px 0 0;
+    color: #858585;
+    font-size: 13px;
+}
+
+.zp-back {
+    flex-shrink: 0;
+    color: #aaa;
+    border: 1px solid rgba(255,255,255,.09);
+    background: #0b0b0b;
+    border-radius: 7px;
+    padding: 9px 13px;
+    text-decoration: none;
+    font-size: 12px;
+    transition: .2s ease;
+}
+
+.zp-back:hover {
+    color: #d4af37;
+    border-color: rgba(212,175,55,.45);
+}
+
+
+/* FORM */
+
+.zp-upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+/* CARDS */
+
+.zp-card {
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.075);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.zp-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 21px 24px;
+    border-bottom: 1px solid rgba(255,255,255,.065);
+    background: #101010;
+}
+
+.zp-card-number {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(212,175,55,.35);
+    border-radius: 5px;
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.zp-card-header h2 {
+    margin: 2px 0 3px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.zp-card-header p {
+    margin: 0;
+    color: #707070;
+    font-size: 11px;
+}
+
+
+/* FIELDS */
+
+.zp-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 24px;
+}
+
+.zp-full {
+    grid-column: 1 / -1;
+}
+
+.zp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.zp-field label {
+    color: #d0d0d0;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.zp-field label span {
+    color: #d4af37;
+}
+
+.zp-field label small {
+    color: #666;
+    font-size: 10px;
+    font-weight: 400;
+    margin-left: 4px;
+}
+
+.zp-field input,
+.zp-field select {
+    width: 100%;
+    box-sizing: border-box;
+    height: 43px;
+    padding: 0 12px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,.08);
+    outline: none;
+    background: #050505;
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    transition: .2s ease;
+}
+
+.zp-field input::placeholder {
+    color: #4d4d4d;
+}
+
+.zp-field input:focus,
+.zp-field select:focus {
+    border-color: rgba(212,175,55,.65);
+    box-shadow: 0 0 0 2px rgba(212,175,55,.06);
+}
+
+.zp-field select {
+    cursor: pointer;
+}
+
+
+/* FILE UPLOAD */
+
+.zp-card > .zp-file-box {
+    margin: 20px 24px 24px;
+}
+
+.zp-file-box {
+    min-height: 82px;
+    padding: 0 17px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-sizing: border-box;
+
+    border: 1px dashed rgba(255,255,255,.13);
+    border-radius: 8px;
+
+    background: #070707;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.zp-file-box:hover {
+    border-color: rgba(212,175,55,.55);
+    background: #0a0a0a;
+}
+
+.zp-file-box input {
+    display: none;
+}
+
+.zp-file-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+    background: rgba(212,175,55,.08);
+    border: 1px solid rgba(212,175,55,.15);
+
+    color: #d4af37;
+    font-size: 18px;
+}
+
+.zp-file-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.zp-file-content strong {
+    color: #ddd;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.zp-file-content span {
+    color: #606060;
+    font-size: 10px;
+}
+
+.zp-file-action {
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.zp-file-box:hover .zp-file-action {
+    color: #d4af37;
+    border-color: rgba(212,175,55,.35);
+}
+
+
+/* SUBMIT BAR */
+
+.zp-submit-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    padding-top: 5px;
+}
+
+.zp-cancel {
+    color: #777;
+    text-decoration: none;
+    font-size: 11px;
+    padding: 11px 13px;
+}
+
+.zp-cancel:hover {
+    color: #fff;
+}
+
+.zp-submit {
+    height: 42px;
+    padding: 0 19px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: #d4af37;
+    color: #050505;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.zp-submit:hover {
+    background: #f1ce58;
+    transform: translateY(-1px);
+}
+
+.zp-submit b {
+    font-size: 15px;
+    line-height: 1;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    .zp-admin-upload {
+        width: min(100% - 28px, 900px);
+        padding-top: 25px;
+    }
+
+    .zp-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .zp-page-header h1 {
+        font-size: 25px;
+    }
+
+    .zp-back {
+        order: -1;
+    }
+
+    .zp-fields {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .zp-full {
+        grid-column: auto;
+    }
+
+    .zp-card-header {
+        padding: 18px;
+    }
+
+    .zp-card > .zp-file-box {
+        margin: 18px;
+    }
+
+    .zp-file-box {
+        padding: 12px;
+    }
+
+    .zp-file-action {
+        display: none;
+    }
+
+    .zp-submit-bar {
+        justify-content: stretch;
+    }
+
+    .zp-submit {
+        flex: 1;
+        justify-content: center;
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Music | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<main class="music-page">
+
+    <section class="music-hero">
+        <div class="music-hero-content">
+            <span class="eyebrow">ZIMPLUG MUSIC</span>
+
+            <h1>
+                Discover your<br>
+                <span>next favourite.</span>
+            </h1>
+
+            <p>
+                Stream Zimbabwean music, discover new artists,
+                and download the songs you love.
+            </p>
+
+            <div class="music-search">
+                <span>⌕</span>
+                <input
+                    type="search"
+                    id="musicSearch"
+                    placeholder="Search songs, artists or albums..."
+                    autocomplete="off"
+                >
+            </div>
+        </div>
+
+        <div class="music-hero-art">
+            <div class="hero-disc">
+                <span>♪</span>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="music-section">
+
+        <div class="section-heading-row">
+            <div>
+                <span class="section-eyebrow">EXPLORE</span>
+                <h2>Music</h2>
+            </div>
+
+            <span class="song-count">
+                {{ songs|length }} song{% if songs|length != 1 %}s{% endif %}
+            </span>
+        </div>
+
+
+        <div class="genre-filter">
+
+            <a href="/music"
+               class="{% if not selected_genre %}selected{% endif %}">
+                ALL
+            </a>
+
+            {% for genre in genres %}
+            <a href="/music?genre={{ genre|urlencode }}"
+               class="{% if selected_genre|lower == genre|lower %}selected{% endif %}">
+                {{ genre|upper }}
+            </a>
+            {% endfor %}
+
+        </div>
+
+
+        <div class="song-list" id="songList">
+
+            {% for song in songs %}
+
+            <article
+                class="music-song-card song-row"
+                data-id="{{ song.id }}"
+                data-audio="{{ url_for('static', filename='music/' + song.audio) }}"
+                data-title="{{ song.title }}"
+                data-artist="{{ song.artist }}"
+                data-cover="{{ url_for('static', filename='images/' + song.cover) if song.cover else '' }}"
+            >
+
+                <button class="song-play" type="button" aria-label="Play {{ song.title }}">
+                    <span>▶</span>
+                </button>
+
+
+                <div class="song-cover">
+
+                    {% if song.cover %}
+                        <img
+                            src="{{ url_for('static', filename='images/' + song.cover) }}"
+                            alt="{{ song.title }} cover"
+                        >
+                    {% else %}
+                        <div class="cover-placeholder">♪</div>
+                    {% endif %}
+
+                    <div class="cover-overlay">▶</div>
+
+                </div>
+
+
+                <div class="song-details">
+
+                    <strong>{{ song.title }}</strong>
+
+                    <span>
+                        {{ song.artist }}
+
+                        {% if song.album %}
+                            <em>· {{ song.album }}</em>
+                        {% endif %}
+                    </span>
+
+                </div>
+
+
+                <div class="song-stats">
+
+                    <span>
+                        <b>{{ song.plays }}</b>
+                        plays
+                    </span>
+
+                    <span>
+                        <b>{{ song.downloads }}</b>
+                        downloads
+                    </span>
+
+                </div>
+
+
+                <a
+                    href="/download/{{ song.id }}"
+                    class="download-button"
+                    title="Download {{ song.title }}"
+                    aria-label="Download {{ song.title }}"
+                >
+                    <span>↓</span>
+                </a>
+
+            </article>
+
+            {% else %}
+
+            <div class="music-empty">
+
+                <div class="empty-icon">♪</div>
+
+                <h3>No music found</h3>
+
+                <p>
+                    There are no songs in this section yet.
+                    Try another genre or check back soon.
+                </p>
+
+                {% if selected_genre %}
+                    <a href="/music" class="empty-button">
+                        View all music
+                    </a>
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const search = document.getElementById("musicSearch");
+    const cards = document.querySelectorAll(".music-song-card");
+
+    if (!search) return;
+
+    search.addEventListener("input", function () {
+
+        const query = this.value.toLowerCase().trim();
+
+        cards.forEach(function (card) {
+
+            const title = (card.dataset.title || "").toLowerCase();
+            const artist = (card.dataset.artist || "").toLowerCase();
+
+            const details = card.querySelector(".song-details span");
+            const album = details ? details.textContent.toLowerCase() : "";
+
+            const matches =
+                title.includes(query) ||
+                artist.includes(query) ||
+                album.includes(query);
+
+            card.style.display = matches ? "" : "grid";
+
+            if (!matches) {
+                card.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

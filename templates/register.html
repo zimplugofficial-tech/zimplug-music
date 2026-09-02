@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-brand">
+            <span class="auth-eyebrow">JOIN ZIMPLUG MUSIC</span>
+            <h1>Create your account.</h1>
+            <p>Join ZimPlug and make your music discovery experience personal.</p>
+        </div>
+
+        {% if message %}
+        <div class="auth-error">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="auth-form">
+
+            <label for="name">Your name</label>
+            <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Your name"
+                autocomplete="name"
+                required
+            >
+
+            <label for="email">Email address</label>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+            >
+
+            <button type="submit" class="auth-submit">
+                CREATE ACCOUNT
+            </button>
+
+        </form>
+
+        <div class="auth-divider">
+            <span>ALREADY HAVE AN ACCOUNT?</span>
+        </div>
+
+        <a href="/login" class="auth-create">
+            LOG IN
+        </a>
+
+        <a href="/" class="auth-back">
+            ← Back to ZimPlug
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

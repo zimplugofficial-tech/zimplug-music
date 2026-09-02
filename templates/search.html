@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search — ZimPlug Music</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+    <a href="/" class="brand">ZIM<span>PLUG</span> MUSIC</a>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/music">Music</a>
+        <a href="/admin">Upload</a>
+    </nav>
+</header>
+
+<main>
+
+<section class="page-heading">
+
+    <p class="eyebrow">SEARCH</p>
+
+    <h1>Results</h1>
+
+    <form action="/search" method="GET" class="search">
+        <input
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search..."
+        >
+        <button type="submit">SEARCH</button>
+    </form>
+
+</section>
+
+<section class="section">
+
+{% if songs %}
+
+<div class="song-list">
+
+{% for song in songs %}
+
+<article class="song-card">
+
+    <a href="/song/{{ song.id }}" class="cover">
+
+        {% if song.cover_file %}
+        <img
+            src="{{ url_for('static', filename='images/' + song.cover_file) }}"
+            alt="{{ song.title }}"
+        >
+        {% else %}
+        <div class="cover-placeholder">♪</div>
+        {% endif %}
+
+    </a>
+
+    <div class="song-info">
+        <a href="/song/{{ song.id }}">
+            <h3>{{ song.title }}</h3>
+        </a>
+
+        <p>{{ song.artist }}</p>
+    </div>
+
+    <a
+        href="/download/{{ song.id }}"
+        class="download-button"
+    >
+        DOWNLOAD
+    </a>
+
+</article>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+    <div>⌕</div>
+    <h3>No results</h3>
+    <p>We couldn't find music matching "{{ query }}".</p>
+</div>
+
+{% endif %}
+
+</section>
+
+</main>
+
+<footer>
+    <strong>ZIMPLUG MUSIC</strong>
+    <p>Music discovery. Direct downloads.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ZimPlug Admin</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="admin-body">
+
+<header class="admin-header">
+
+    <a href="/" class="admin-brand">
+        <img src="{{ url_for('static', filename='images/logo.png') }}"
+             alt="ZimPlug Music">
+    </a>
+
+    <div class="admin-header-center">
+        <span>ADMIN DASHBOARD</span>
+    </div>
+
+    <div class="admin-header-actions">
+        <a href="/" class="admin-view-site">VIEW SITE</a>
+        <a href="/admin/logout" class="admin-logout">LOG OUT</a>
+    </div>
+
+</header>
+
+<a href="{{ url_for('admin_upload') }}" class="single-upload-card">
+    <div class="single-upload-icon">♪</div>
+    <div class="single-upload-info">
+        <strong>Upload Single Song</strong>
+        <span>Upload one song directly to the ZimPlug music library</span>
+    </div>
+    <div class="single-upload-arrow">→</div>
+</a>
+
+
+
+
+<main class="admin-dashboard">\n\n<div class="zp-admin-actions">
+
+    <a href="{{ url_for('admin_upload') }}" class="zp-admin-action">
+        <div class="zp-action-icon">♪</div>
+
+        <div class="zp-action-info">
+            <span>UPLOAD</span>
+            <strong>Single Song</strong>
+            <small>Add one song to the ZimPlug music library</small>
+        </div>
+
+        <div class="zp-action-arrow">→</div>
+    </a>
+
+
+    <a href="{{ url_for('admin_albums') }}" class="zp-admin-action">
+        <div class="zp-action-icon">♫</div>
+
+        <div class="zp-action-info">
+            <span>MANAGE</span>
+            <strong>Albums</strong>
+            <small>Create albums and manage their tracks</small>
+        </div>
+
+        <div class="zp-action-arrow">→</div>
+    </a>
+
+</div>
+
+
+        <a href="{{ url_for('admin_albums') }}"
+           class="admin-publish-button"
+           style="display:inline-flex;text-decoration:none;margin-bottom:25px;">
+            🎵 ALBUM MANAGER
+        </a>
+
+
+    
+
+
+    <!-- STATS -->
+
+    
+
+
+    <!-- MUSIC LIBRARY -->
+
+    <section class="admin-panel library-panel">
+
+        <div class="panel-heading">
+
+            <div>
+                <span class="eyebrow">LIBRARY</span>
+                <h2>Uploaded music</h2>
+            </div>
+
+            <span class="library-total">
+                {{ songs|length }} SONGS
+            </span>
+
+        </div>
+
+
+        {% if songs %}
+
+        <div class="admin-library">
+
+            {% for song in songs %}
+
+            <div class="admin-song-row">
+
+                <div class="admin-song-number">
+                    {{ "%02d"|format(loop.index) }}
+                </div>
+
+
+                <div class="admin-song-cover">
+
+                    {% if song.cover %}
+
+                    <img
+                        src="{{ url_for('static', filename='images/' + song.cover) }}"
+                        alt="{{ song.title }}"
+                    >
+
+                    {% else %}
+
+                    <span>♪</span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="admin-song-info">
+
+                    <strong>{{ song.title }}</strong>
+
+                    <span>
+                        {{ song.artist }}
+
+                        {% if song.album %}
+                            · {{ song.album }}
+                        {% endif %}
+                    </span>
+
+                </div>
+
+
+                <div class="admin-song-genre">
+                    {{ song.genre }}
+                </div>
+
+
+                <div class="admin-song-metrics">
+
+                    <span>
+                        <b>{{ song.plays }}</b>
+                        plays
+                    </span>
+
+                    <span>
+                        <b>{{ song.downloads }}</b>
+                        downloads
+                    </span>
+
+                </div>
+
+
+                <a href="/download/{{ song.id }}"
+                   class="admin-download"
+                   title="Download">
+
+                    ↓
+
+                </a>
+
+
+                <form method="POST"
+                      action="/admin/delete-song/{{ song.id }}"
+                      onsubmit="return confirm('Delete {{ song.title|e }}?');">
+
+                    <button
+                        type="submit"
+                        class="admin-delete"
+                        title="Delete song">
+
+                        ×
+
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="admin-empty">
+
+            <span>♪</span>
+
+            <h3>Your music library is empty</h3>
+
+            <p>
+                Upload your first song using the upload panel above.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- QUICK LINKS -->
+
+    <section class="admin-quick-links">
+
+        
+    
+
+<a href="/music">
+            <span>♪</span>
+            <div>
+                <strong>Music Library</strong>
+                <small>View public music</small>
+            </div>
+            <b>→</b>
+        </a>
+
+        
+
+
+<a href="/news">
+            <span>▤</span>
+            <div>
+                <strong>News</strong>
+                <small>View published stories</small>
+            </div>
+            <b>→</b>
+        </a>
+
+        <a href="/help">
+            <span>?</span>
+            <div>
+                <strong>Help Centre</strong>
+                <small>Platform support</small>
+            </div>
+            <b>→</b>
+        </a>
+
+    </section>
+
+</main>
+
+</body>
+</html>
+
+<style>
+.zp-admin-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0 0 28px;
+}
+
+.zp-admin-action {
+    min-height: 94px;
+    padding: 18px 20px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px;
+
+    color: #fff;
+    text-decoration: none;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        transform .2s ease;
+}
+
+.zp-admin-action:hover {
+    background: #101010;
+    border-color: rgba(212,175,55,.42);
+    transform: translateY(-1px);
+}
+
+.zp-action-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    background: rgba(212,175,55,.08);
+    border: 1px solid rgba(212,175,55,.16);
+
+    color: #d4af37;
+    font-size: 20px;
+}
+
+.zp-action-info {
+    min-width: 0;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.zp-action-info span {
+    margin-bottom: 3px;
+
+    color: #d4af37;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.zp-action-info strong {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.zp-action-info small {
+    margin-top: 4px;
+
+    color: #707070;
+    font-size: 10px;
+}
+
+.zp-action-arrow {
+    flex-shrink: 0;
+
+    color: #666;
+    font-size: 18px;
+    transition: .2s ease;
+}
+
+.zp-admin-action:hover .zp-action-arrow {
+    color: #d4af37;
+    transform: translateX(3px);
+}
+
+@media (max-width: 700px) {
+    .zp-admin-actions {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .zp-admin-action {
+        min-height: 82px;
+    }
+}
+</style>

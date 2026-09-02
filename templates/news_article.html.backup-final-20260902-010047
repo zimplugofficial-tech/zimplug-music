@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="news-reader">
+
+    <div class="news-reader-container">
+
+        <a href="{{ url_for('news') }}" class="news-back">
+            ← BACK TO NEWS
+        </a>
+
+        {% if article['image'] %}
+        <div class="news-reader-image">
+            <img
+                src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+                alt="{{ article['title'] }}"
+            >
+        </div>
+        {% endif %}
+
+        <div class="news-reader-category">
+            ZIMPLUG NEWS
+        </div>
+
+        <h1 class="news-reader-title">
+            {{ article['title'] }}
+        </h1>
+
+        <div class="news-reader-date">
+            {{ article['created_at'] }}
+        </div>
+
+        <div class="news-reader-divider"></div>
+
+        <article class="news-reader-body">{{ article['body'] }}</article>
+
+        <div class="news-reader-bottom">
+            <a href="{{ url_for('news') }}" class="news-back">
+                ← BACK TO NEWS
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="admin-section" style="max-width:1100px;margin:40px auto;padding:0 20px;">
+
+    <div class="panel-heading">
+        <div>
+            <span class="eyebrow">ALBUM EDITOR</span>
+            <h1>{{ album["title"] }}</h1>
+            <p>{{ tracks|length }} tracks</p>
+        </div>
+    </div>
+
+    <form method="POST"
+          enctype="multipart/form-data"
+          style="margin:30px 0;padding:25px;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:14px;">
+
+        <div class="admin-field">
+            <label>Album Name</label>
+            <input name="album" value="{{ album['title'] }}" required>
+        </div>
+
+        <div class="admin-field">
+            <label>Artist</label>
+            <input name="artist" value="{{ album['artist'] }}" required>
+        </div>
+
+        <div class="admin-field">
+            <label>Genre</label>
+            <input name="genre" value="{{ album['genre'] }}">
+        </div>
+
+        <div class="admin-field">
+            <label>Replace Artwork</label>
+            <input type="file"
+                   name="cover"
+                   accept=".jpg,.jpeg,.png,.webp">
+        </div>
+
+        <button type="submit" class="admin-publish-button">
+            SAVE ALBUM
+        </button>
+
+    </form>
+
+
+    <div style="margin-top:35px;">
+        <h2>TRACKS</h2>
+
+        <p style="color:#929292;">
+            Drag tracks to change their order.
+        </p>
+
+        <div id="albumTracks">
+
+            {% for song in tracks %}
+
+            <div class="album-track"
+                 draggable="true"
+                 data-id="{{ song['id'] }}"
+                 style="display:flex;align-items:center;gap:15px;padding:16px;margin:10px 0;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:grab;">
+
+                <strong class="track-number">
+                    {{ loop.index }}
+                </strong>
+
+                <span style="font-size:22px;">☷</span>
+
+                <div style="flex:1;">
+                    <strong>{{ song["title"] }}</strong>
+                    <div style="color:#929292;font-size:13px;">
+                        {{ song["artist"] }}
+                    </div>
+                </div>
+
+                <a href="{{ url_for('edit_song', song_id=song['id']) }}"
+                   class="admin-publish-button"
+                   style="text-decoration:none;padding:10px 16px;">
+                    EDIT
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+const list = document.getElementById("albumTracks");
+
+let dragged = null;
+
+list.addEventListener("dragstart", function(e) {
+    dragged = e.target.closest(".album-track");
+});
+
+list.addEventListener("dragover", function(e) {
+    e.preventDefault();
+
+    const target = e.target.closest(".album-track");
+
+    if (!target || target === dragged) return;
+
+    const rect = target.getBoundingClientRect();
+
+    if (e.clientY < rect.top + rect.height / 2) {
+        list.insertBefore(dragged, target);
+    } else {
+        list.insertBefore(dragged, target.nextSibling);
+    }
+});
+
+list.addEventListener("dragend", async function() {
+
+    const songIds = [...list.querySelectorAll(".album-track")]
+        .map(track => Number(track.dataset.id));
+
+    [...list.querySelectorAll(".track-number")]
+        .forEach((el, index) => {
+            el.textContent = index + 1;
+        });
+
+    await fetch(
+        "{{ url_for('reorder_album', album_id=album['id']) }}",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                song_ids: songIds
+            })
+        }
+    );
+});
+</script>
+
+{% endblock %}

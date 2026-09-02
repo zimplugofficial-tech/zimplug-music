@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Report an Issue | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<section class="report-page">
+
+    <div class="report-hero">
+
+        <span class="report-eyebrow">ZIMPLUG MUSIC</span>
+
+        <h1>Report an Issue</h1>
+
+        <p>
+            Found something that doesn't look right?
+            Let us know and we'll take a look.
+        </p>
+
+    </div>
+
+
+    <div class="report-container">
+
+        <div class="report-layout">
+
+            <div class="report-info">
+
+                <span class="report-label">BEFORE YOU REPORT</span>
+
+                <h2>Help us understand the problem.</h2>
+
+                <p>
+                    Give us as much information as possible so we can
+                    investigate your report quickly.
+                </p>
+
+                <div class="report-tips">
+
+                    <div class="report-tip">
+                        <span>01</span>
+                        <div>
+                            <strong>Describe the problem</strong>
+                            <p>
+                                Tell us exactly what happened and what
+                                you expected to happen.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="report-tip">
+                        <span>02</span>
+                        <div>
+                            <strong>Include the page</strong>
+                            <p>
+                                Tell us which song, artist, page, or
+                                feature is affected.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="report-tip">
+                        <span>03</span>
+                        <div>
+                            <strong>Be specific</strong>
+                            <p>
+                                Extra details can help us identify and
+                                resolve the issue faster.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="report-messages">
+    {% if success %}
+        <div class="report-success">{{ success }}</div>
+    {% endif %}
+    {% if error %}
+        <div class="report-error">{{ error }}</div>
+    {% endif %}
+</div>
+
+<div class="report-card">
+
+                <form method="POST" action="/report">
+
+                    <div class="report-field">
+
+                        <label for="report-type">
+                            REPORT TYPE
+                        </label>
+
+                        <select id="report-type" name="type">
+
+                            <option value="">
+                                Select a report type
+                            </option>
+
+                            <option value="broken">
+                                Broken feature
+                            </option>
+
+                            <option value="download">
+                                Download problem
+                            </option>
+
+                            <option value="incorrect">
+                                Incorrect information
+                            </option>
+
+                            <option value="inappropriate">
+                                Inappropriate content
+                            </option>
+
+                            <option value="copyright">
+                                Copyright concern
+                            </option>
+
+                            <option value="other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="report-field">
+
+                        <label for="report-name">
+                            YOUR NAME
+                        </label>
+
+                        <input
+                            type="text"
+                            id="report-name"
+                            name="name"
+                            placeholder="Your name">
+
+                    </div>
+
+
+                    <div class="report-field">
+
+                        <label for="report-email">
+                            EMAIL ADDRESS
+                        </label>
+
+                        <input
+                            type="email"
+                            id="report-email"
+                            name="email"
+                            placeholder="you@example.com">
+
+                    </div>
+
+
+                    <div class="report-field">
+
+                        <label for="report-subject">
+                            SUBJECT
+                        </label>
+
+                        <input
+                            type="text"
+                            id="report-subject"
+                            name="subject"
+                            placeholder="What is the issue?">
+
+                    </div>
+
+
+                    <div class="report-field">
+
+                        <label for="report-message">
+                            MESSAGE
+                        </label>
+
+                        <textarea
+                            id="report-message"
+                            name="message"
+                            rows="7"
+                            placeholder="Describe the issue..."></textarea>
+
+                    </div>
+
+
+                    <button type="submit" class="report-submit">
+                        SUBMIT REPORT
+                        <span>→</span>
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-notice">
+
+            <div class="report-notice-icon">!</div>
+
+            <div>
+                <strong>Copyright or rights concern?</strong>
+
+                <p>
+                    If your report concerns ownership or copyright,
+                    select <strong>Copyright concern</strong> above and
+                    provide enough information for us to identify the
+                    material.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

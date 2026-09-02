@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ song.title }} | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<section class="page">
+
+    <div class="song-detail">
+
+        <div class="song-cover">
+
+            {% if song.cover %}
+
+            <img src="{{ url_for('static', filename='images/' + song.cover) }}">
+
+            {% else %}
+
+            ♪
+
+            {% endif %}
+
+        </div>
+
+        <div>
+
+            <div class="meta">
+                {{ song.genre }}
+            </div>
+
+            <h1>{{ song.title }}</h1>
+
+            <p class="page-intro">
+                {{ song.artist }}
+            </p>
+
+            {% if song.description %}
+            <p class="page-intro">
+                {{ song.description }}
+            </p>
+            {% endif %}
+
+            <div class="buttons">
+
+                <button
+                    class="btn btn-gold play-song"
+                    data-title="{{ song.title }}"
+                    data-artist="{{ song.artist }}"
+                    data-audio="{{ url_for('static', filename='music/' + song.filename) }}"
+                    data-cover="{{ song.cover }}"
+                >
+                    ▶ PLAY PREVIEW
+                </button>
+
+                <a
+                    class="btn btn-outline"
+                    href="{{ url_for('download', song_id=song_id) }}"
+                >
+                    ↓ DOWNLOAD MP3
+                </a>
+
+            </div>
+
+            <p style="color:#555;font-size:10px;margin-top:30px;">
+                {{ song.downloads }} downloads
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

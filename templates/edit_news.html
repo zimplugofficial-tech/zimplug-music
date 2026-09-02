@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .article-editor {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px 60px;
+    }
+
+    .article-editor h1 {
+        margin: 0 0 8px;
+        color: #ffffff;
+        font-size: 32px;
+    }
+
+    .article-editor-subtitle {
+        color: #858585;
+        margin-bottom: 30px;
+    }
+
+    .article-form {
+        background: #101010;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 12px;
+        padding: 28px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        background: #0b0b0b;
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 8px;
+        padding: 13px;
+        font: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #d4af37;
+    }
+
+    .form-group textarea {
+        min-height: 400px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .current-image {
+        margin-top: 12px;
+    }
+
+    .current-image img {
+        width: 220px;
+        max-height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .editor-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .publish-button {
+        border: 0;
+        background: #d4af37;
+        color: #050505;
+        padding: 13px 22px;
+        border-radius: 8px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .publish-button:hover {
+        background: #f1ce58;
+    }
+
+    .back-button {
+        color: #ffffff;
+        text-decoration: none;
+        border: 1px solid rgba(255,255,255,.12);
+        padding: 12px 18px;
+        border-radius: 8px;
+    }
+
+    .back-button:hover {
+        border-color: #d4af37;
+        color: #d4af37;
+    }
+
+    @media (max-width: 600px) {
+        .article-form {
+            padding: 20px;
+        }
+
+        .editor-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .publish-button,
+        .back-button {
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="article-editor">
+
+    {% if article %}
+
+        <h1>Edit Article</h1>
+        <div class="article-editor-subtitle">
+            Update your ZimPlug Music article.
+        </div>
+
+    {% else %}
+
+        <h1>Add Article</h1>
+        <div class="article-editor-subtitle">
+            Publish a new ZimPlug Music article.
+        </div>
+
+    {% endif %}
+
+    <form
+        class="article-form"
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        <div class="form-group">
+
+            <label for="title">
+                Article Title
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                value="{{ article['title'] if article else '' }}"
+                placeholder="Enter article title"
+                required
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="image">
+                Article Picture
+            </label>
+
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+            >
+
+            {% if article and article['image'] %}
+
+                <div class="current-image">
+
+                    <p style="color:#858585;">
+                        Current picture:
+                    </p>
+
+                    <img
+                        src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+                        alt="{{ article['title'] }}"
+                    >
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="body">
+                Article Body
+            </label>
+
+            <textarea
+                id="body"
+                name="body"
+                placeholder="Write your article here..."
+                required
+            >{{ article['body'] if article else '' }}</textarea>
+
+        </div>
+
+        <div class="editor-actions">
+
+            <a
+                href="{{ url_for('admin_news') }}"
+                class="back-button"
+            >
+                ← BACK
+            </a>
+
+            <button
+                type="submit"
+                class="publish-button"
+            >
+                {% if article %}
+                    SAVE CHANGES
+                {% else %}
+                    PUBLISH ARTICLE
+                {% endif %}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

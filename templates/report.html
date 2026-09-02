@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Report an Issue | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<section class="report-page">
+
+    <div class="report-hero">
+        <div class="report-hero-inner">
+            <div class="report-badge">
+                <span></span>
+                ZIMPLUG MUSIC SUPPORT
+            </div>
+
+            <h1>Something not right?</h1>
+
+            <p>
+                Tell us what happened. Your feedback helps us keep
+                ZimPlug Music clean, reliable and easy to use.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="report-container">
+
+        {% if success %}
+        <div class="report-alert report-alert-success">
+            <div class="report-alert-icon">✓</div>
+            <div>
+                <strong>Report submitted</strong>
+                <p>{{ success }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="report-alert report-alert-error">
+            <div class="report-alert-icon">!</div>
+            <div>
+                <strong>Something went wrong</strong>
+                <p>{{ error }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+
+        <div class="report-grid">
+
+            <!-- LEFT SIDE -->
+            <div class="report-sidebar">
+
+                <div class="report-sidebar-heading">
+                    <span>01</span>
+                    <div>
+                        <small>REPORT CENTER</small>
+                        <h2>Help us fix it.</h2>
+                    </div>
+                </div>
+
+                <p class="report-sidebar-text">
+                    Whether it's a broken download, incorrect information,
+                    inappropriate content or something else, let us know.
+                </p>
+
+
+                <div class="report-steps">
+
+                    <div class="report-step">
+                        <div class="report-step-number">01</div>
+                        <div>
+                            <h3>Choose the issue</h3>
+                            <p>Select the type of problem you're reporting.</p>
+                        </div>
+                    </div>
+
+                    <div class="report-step">
+                        <div class="report-step-number">02</div>
+                        <div>
+                            <h3>Give us the details</h3>
+                            <p>Tell us what happened and where you found it.</p>
+                        </div>
+                    </div>
+
+                    <div class="report-step">
+                        <div class="report-step-number">03</div>
+                        <div>
+                            <h3>We'll investigate</h3>
+                            <p>Our team will review your report.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="report-side-note">
+                    <span>TIP</span>
+                    <p>
+                        Reporting a specific song or page?
+                        Include its name so we can find it quickly.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+            <div class="report-card">
+
+                <div class="report-card-header">
+                    <div>
+                        <span>SUBMIT A REPORT</span>
+                        <h2>Tell us what's happening.</h2>
+                    </div>
+
+                    <div class="report-card-mark">ZP</div>
+                </div>
+
+
+                <form method="POST" action="/report">
+
+                    <div class="report-field">
+                        <label for="report-type">
+                            REPORT TYPE
+                        </label>
+
+                        <select id="report-type" name="type" required>
+                            <option value="">
+                                Select an issue
+                            </option>
+
+                            <option value="broken">
+                                Broken feature
+                            </option>
+
+                            <option value="download">
+                                Download problem
+                            </option>
+
+                            <option value="incorrect">
+                                Incorrect information
+                            </option>
+
+                            <option value="inappropriate">
+                                Inappropriate content
+                            </option>
+
+                            <option value="copyright">
+                                Copyright concern
+                            </option>
+
+                            <option value="other">
+                                Other
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="report-form-row">
+
+                        <div class="report-field">
+                            <label for="report-name">
+                                YOUR NAME
+                            </label>
+
+                            <input
+                                type="text"
+                                id="report-name"
+                                name="name"
+                                placeholder="Your name">
+                        </div>
+
+
+                        <div class="report-field">
+                            <label for="report-email">
+                                EMAIL ADDRESS
+                            </label>
+
+                            <input
+                                type="email"
+                                id="report-email"
+                                name="email"
+                                placeholder="you@example.com">
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-field">
+                        <label for="report-subject">
+                            SUBJECT
+                        </label>
+
+                        <input
+                            type="text"
+                            id="report-subject"
+                            name="subject"
+                            placeholder="Briefly describe the issue"
+                            required>
+                    </div>
+
+
+                    <div class="report-field">
+                        <div class="report-label-row">
+                            <label for="report-message">
+                                MESSAGE
+                            </label>
+
+                            <span>Be as specific as possible</span>
+                        </div>
+
+                        <textarea
+                            id="report-message"
+                            name="message"
+                            rows="7"
+                            placeholder="Tell us what happened, which page or song is affected, and anything else that may help..."
+                            required></textarea>
+                    </div>
+
+
+                    <div class="report-form-footer">
+
+                        <div class="report-privacy">
+                            <span>🔒</span>
+                            <p>
+                                Your information is only used to
+                                investigate your report.
+                            </p>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="report-submit">
+
+                            <span>SUBMIT REPORT</span>
+                            <strong>→</strong>
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-bottom">
+
+            <div>
+                <span class="report-bottom-number">02</span>
+
+                <div>
+                    <strong>Copyright or rights concern?</strong>
+                    <p>
+                        Select <b>Copyright concern</b> above and provide
+                        enough information for us to identify the material.
+                    </p>
+                </div>
+            </div>
+
+            <div class="report-bottom-brand">
+                ZIMPLUG<br>
+                <span>MUSIC</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

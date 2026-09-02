@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}My Account | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<section class="account-page">
+
+    <div class="account-container">
+
+        <div class="account-header">
+            <span class="account-eyebrow">ZIMPLUG MUSIC</span>
+            <h1>My Account</h1>
+            <p>Manage your ZimPlug Music account.</p>
+        </div>
+
+        <div class="account-card">
+
+            <div class="account-avatar">
+                {{ user["name"][0]|upper }}
+            </div>
+
+            <div class="account-details">
+
+                <div class="account-detail">
+                    <span class="account-label">NAME</span>
+                    <strong>{{ user["name"] }}</strong>
+                </div>
+
+                <div class="account-detail">
+                    <span class="account-label">EMAIL</span>
+                    <strong>{{ user["email"] }}</strong>
+                </div>
+
+                <div class="account-detail">
+                    <span class="account-label">STATUS</span>
+                    <strong class="account-status">ACTIVE</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="account-actions">
+
+            <a href="/music" class="account-action primary">
+                EXPLORE MUSIC
+            </a>
+
+            <a href="/logout" class="account-action">
+                LOG OUT
+            </a>
+
+        </div>
+
+        <a href="/" class="account-back">
+            ← Back to ZimPlug Music
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="admin-section" style="max-width:700px;margin:40px auto;padding:0 20px;">
+
+    <div class="panel-heading">
+        <div>
+            <span class="eyebrow">EDIT TRACK</span>
+            <h1>{{ song["title"] }}</h1>
+        </div>
+    </div>
+
+    <form method="POST"
+          style="margin-top:30px;padding:25px;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:14px;">
+
+        <div class="admin-field">
+            <label>Song Title</label>
+            <input name="title"
+                   value="{{ song['title'] }}"
+                   required>
+        </div>
+
+        <div class="admin-field">
+            <label>Artist</label>
+            <input name="artist"
+                   value="{{ song['artist'] }}"
+                   required>
+        </div>
+
+        <div class="admin-field">
+            <label>Genre</label>
+            <input name="genre"
+                   value="{{ song['genre'] }}">
+        </div>
+
+        <button type="submit" class="admin-publish-button">
+            SAVE TRACK
+        </button>
+
+    </form>
+
+</section>
+
+{% endblock %}

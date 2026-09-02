@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Log In | ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-brand">
+            <span class="auth-eyebrow">ZIMPLUG MUSIC</span>
+            <h1>Welcome back.</h1>
+            <p>Log in to continue your ZimPlug experience.</p>
+        </div>
+
+        {% if error %}
+        <div class="auth-error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="auth-form">
+
+            <label for="email">Email address</label>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" class="auth-submit">
+                LOG IN
+            </button>
+
+        </form>
+
+        <div class="auth-divider">
+            <span>NEW TO ZIMPLUG?</span>
+        </div>
+
+        <a href="/register" class="auth-create">
+            CREATE ACCOUNT
+        </a>
+
+        <a href="/" class="auth-back">
+            ← Back to ZimPlug
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

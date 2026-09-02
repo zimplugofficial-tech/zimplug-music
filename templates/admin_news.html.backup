@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block title %}Publish Manager — ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<style>
+.publish-manager {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+.publish-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 38px;
+}
+
+.publish-label {
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    margin-bottom: 10px;
+}
+
+.publish-top h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 34px;
+    letter-spacing: -.03em;
+}
+
+.publish-top p {
+    margin: 10px 0 0;
+    color: #858585;
+    font-size: 14px;
+}
+
+.publish-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 22px;
+    background: #d4af37;
+    color: #050505;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    transition: .2s ease;
+}
+
+.publish-add:hover {
+    background: #f1ce58;
+}
+
+.publish-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.publish-item {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    align-items: center;
+    gap: 22px;
+    padding: 14px;
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+    transition: .2s ease;
+}
+
+.publish-item:hover {
+    border-color: rgba(212,175,55,.35);
+}
+
+.publish-thumb {
+    width: 150px;
+    height: 95px;
+    background: #101010;
+    overflow: hidden;
+}
+
+.publish-thumb img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.publish-no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 28px;
+}
+
+.publish-info {
+    min-width: 0;
+}
+
+.publish-info h2 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.25;
+}
+
+.publish-date {
+    color: #858585;
+    font-size: 11px;
+}
+
+.publish-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.publish-edit,
+.publish-delete {
+    min-height: 38px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    cursor: pointer;
+}
+
+.publish-edit {
+    color: #d4af37;
+    background: transparent;
+    border: 1px solid rgba(212,175,55,.35);
+    text-decoration: none;
+}
+
+.publish-edit:hover {
+    background: #d4af37;
+    color: #050505;
+}
+
+.publish-delete {
+    color: #858585;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.1);
+}
+
+.publish-delete:hover {
+    color: #fff;
+    border-color: rgba(255,255,255,.3);
+}
+
+.publish-empty {
+    padding: 70px 30px;
+    text-align: center;
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+.publish-empty h2 {
+    margin: 0 0 10px;
+    color: #fff;
+}
+
+.publish-empty p {
+    margin: 0;
+    color: #858585;
+}
+
+@media (max-width: 700px) {
+    .publish-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .publish-item {
+        grid-template-columns: 100px 1fr
+cd ~/Desktop/"ZimPlug Music"
+
+cat > templates/admin_news.html <<'EOF'
+{% extends "base.html" %}
+
+{% block title %}Publish Manager — ZimPlug Music{% endblock %}
+
+{% block content %}
+
+<style>
+.publish-manager {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+.publish-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 38px;
+}
+
+.publish-label {
+    color: #d4af37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    margin-bottom: 10px;
+}
+
+.publish-top h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 34px;
+    letter-spacing: -.03em;
+}
+
+.publish-top p {
+    margin: 10px 0 0;
+    color: #858585;
+    font-size: 14px;
+}
+
+.publish-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 22px;
+    background: #d4af37;
+    color: #050505;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    transition: .2s ease;
+}
+
+.publish-add:hover {
+    background: #f1ce58;
+}
+
+.publish-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.publish-item {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    align-items: center;
+    gap: 22px;
+    padding: 14px;
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+    transition: .2s ease;
+}
+
+.publish-item:hover {
+    border-color: rgba(212,175,55,.35);
+}
+
+.publish-thumb {
+    width: 150px;
+    height: 95px;
+    background: #101010;
+    overflow: hidden;
+}
+
+.publish-thumb img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.publish-no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 28px;
+}
+
+.publish-info {
+    min-width: 0;
+}
+
+.publish-info h2 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.25;
+}
+
+.publish-date {
+    color: #858585;
+    font-size: 11px;
+}
+
+.publish-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.publish-edit,
+.publish-delete {
+    min-height: 38px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    cursor: pointer;
+}
+
+.publish-edit {
+    color: #d4af37;
+    background: transparent;
+    border: 1px solid rgba(212,175,55,.35);
+    text-decoration: none;
+}
+
+.publish-edit:hover {
+    background: #d4af37;
+    color: #050505;
+}
+
+.publish-delete {
+    color: #858585;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.1);
+}
+
+.publish-delete:hover {
+    color: #fff;
+    border-color: rgba(255,255,255,.3);
+}
+
+.publish-empty {
+    padding: 70px 30px;
+    text-align: center;
+    background: #0b0b0b;
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+.publish-empty h2 {
+    margin: 0 0 10px;
+    color: #fff;
+}
+
+.publish-empty p {
+    margin: 0;
+    color: #858585;
+}
+
+@media (max-width: 700px) {
+    .publish-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .publish-item {
+        grid-template-columns: 100px 1fr;
+    }
+
+    .publish-thumb {
+        width: 100px;
+        height: 75px;
+    }
+
+    .publish-actions {
+        grid-column: 1 / -1;
+        padding-top: 4px;
+    }
+}
+</style>
+
+<section class="publish-manager">
+
+    <div class="publish-top">
+        <div>
+            <div class="publish-label">ZIMPLUG NEWS</div>
+            <h1>Publish Manager</h1>
+            <p>Create, manage and publish your articles.</p>
+        </div>
+
+        <a href="{{ url_for('add_news') }}" class="publish-add">
+            + ADD ARTICLE
+        </a>
+    </div>
+
+    {% if articles %}
+
+    <div class="publish-list">
+
+        {% for article in articles %}
+
+        <article class="publish-item">
+
+            <div class="publish-thumb">
+                {% if article['image'] %}
+                    <img
+                        src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+                        alt="{{ article['title'] }}"
+                    >
+                {% else %}
+                    <div class="publish-no-image">✦</div>
+                {% endif %}
+            </div>
+
+            <div class="publish-info">
+                <h2>{{ article['title'] }}</h2>
+
+                <div class="publish-date">
+                    {{ article['created_at'] }}
+                </div>
+            </div>
+
+            <div class="publish-actions">
+
+                <a
+                    href="{{ url_for('edit_news', news_id=article['id']) }}"
+                    class="publish-edit"
+                >
+                    EDIT
+                </a>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('delete_news', news_id=article['id']) }}"
+                    onsubmit="return confirm('Delete this article permanently?');"
+                >
+                    <button type="submit" class="publish-delete">
+                        DELETE
+                    </button>
+                </form>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="publish-empty">
+        <h2>No articles yet</h2>
+        <p>Create your first ZimPlug News article.</p>
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

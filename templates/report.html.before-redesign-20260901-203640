@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Report an Issue | ZimPlug Music</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#050505;color:#fff;font-family:Arial,Helvetica,sans-serif}
+main{max-width:1000px;margin:auto;padding:85px 24px}
+.eyebrow{color:#d4af37;font-size:11px;font-weight:800;letter-spacing:4px}
+h1{font-size:clamp(45px,7vw,72px);line-height:1;margin:18px 0}
+.intro{max-width:700px;color:#999;line-height:1.8;font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:50px}
+.card{background:#0b0b0b;border:1px solid #202020;border-radius:16px;padding:28px}
+.card h2{margin-top:0;font-size:21px}
+.card p,.card li{color:#999;line-height:1.75;font-size:14px}
+section{border-top:1px solid #202020;padding:40px 0;margin-top:45px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:60px 20px}}
+</style>
+</head>
+<body>
+<main>
+
+<span class="eyebrow">ZIMPLUG MUSIC</span>
+<h1>Report an <span style="color:#d4af37">Issue</span></h1>
+
+<p class="intro">
+Help us keep ZimPlug Music safe, accurate and reliable. Use this
+page to report copyright concerns, broken downloads, inappropriate
+content, security problems or incorrect information.
+</p>
+
+<div class="grid">
+
+<div class="card">
+<h2>Copyright infringement</h2>
+<p>
+If you own copyrighted material and believe it is being distributed
+on ZimPlug Music without authorization, provide enough information
+for us to identify the material and review your complaint.
+</p>
+</div>
+
+<div class="card">
+<h2>Broken download</h2>
+<p>
+Tell us the song title, artist name and what happens when you try
+to download it. Include the page address if available.
+</p>
+</div>
+
+<div class="card">
+<h2>Incorrect information</h2>
+<p>
+Report incorrect artist names, song titles, genres, artwork,
+release information or other metadata.
+</p>
+</div>
+
+<div class="card">
+<h2>Security issue</h2>
+<p>
+If you discover a security vulnerability or suspicious behaviour,
+please report it responsibly rather than attempting to access,
+change or damage another person's account or data.
+</p>
+</div>
+
+</div>
+
+<section>
+<h2>What to include</h2>
+<ul>
+<li>Your name and contact information.</li>
+<li>The URL of the affected page.</li>
+<li>The song, artist or content involved.</li>
+<li>A clear description of the problem.</li>
+<li>Any supporting information that helps us investigate.</li>
+</ul>
+</section>
+
+<section>
+<h2>Copyright reports</h2>
+<p>
+Copyright complaints should include a description of the copyrighted
+work, identification of the material being complained about, your
+contact information, and a statement explaining your rights or
+authorization to make the complaint.
+</p>
+</section>
+
+<section>
+<h2>Submit a report</h2>
+<p>
+Please use the official ZimPlug Music contact channel available on
+the website. Do not include passwords, authentication codes or
+unnecessary sensitive personal information in a report.
+</p>
+</section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main class="album-page">
+
+    <section class="album-hero">
+
+        <div class="album-page-cover">
+
+            {% if album.cover %}
+                <img
+                    src="{{ url_for('static', filename='images/' + album.cover) }}"
+                    alt="{{ album.title }}"
+                >
+            {% else %}
+                <span>♪</span>
+            {% endif %}
+
+        </div>
+
+        <div class="album-page-info">
+
+            <span class="eyebrow">ALBUM</span>
+
+            <h1>{{ album.title }}</h1>
+
+            <p class="album-page-artist">
+                {{ album.artist }}
+            </p>
+
+            {% if album.genre %}
+                <span class="album-page-genre">
+                    {{ album.genre }}
+                </span>
+            {% endif %}
+
+            <p class="album-page-count">
+                {{ tracks|length }} tracks
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section class="album-tracks-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">TRACKLIST</span>
+                <h2>All songs.</h2>
+            </div>
+        </div>
+
+
+        <div class="album-full-track-list">
+
+            {% for track in tracks %}
+
+            <article
+                class="album-full-track song-row"
+                data-id="{{ track.id }}"
+                data-audio="{{ url_for('static', filename='music/' + track.audio) }}"
+                data-title="{{ track.title }}"
+                data-artist="{{ track.artist }}"
+                data-cover="{% if track.cover %}{{ url_for('static', filename='images/' + track.cover) }}{% elif album.cover %}{{ url_for('static', filename='images/' + album.cover) }}{% endif %}"
+            >
+
+                <span class="full-track-number">
+                    {{ "%02d" % loop.index }}
+                </span>
+
+                <button class="song-play" type="button">
+                    ▶
+                </button>
+
+                <div class="song-details">
+
+                    <strong>{{ track.title }}</strong>
+
+                    <span>{{ track.artist }}</span>
+
+                </div>
+
+                <div class="song-meta">
+
+                    <span>{{ track.plays }} plays</span>
+
+                    <span>{{ track.downloads }} downloads</span>
+
+                </div>
+
+                <a
+                    href="/download/{{ track.id }}"
+                    class="download-button"
+                >
+                    ↓
+                </a>
+
+            </article>
+
+            {% else %}
+
+            <div class="empty-state">
+                <strong>This album has no tracks yet.</strong>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</main>
+
+{% endblock %}

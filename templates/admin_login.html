@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ZimPlug Admin</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<main class="auth-page">
+
+    <div class="auth-card">
+
+        <span class="eyebrow">ZIMPLUG MUSIC</span>
+
+        <h1>Admin.</h1>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+
+            <label>Username</label>
+            <input name="username" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <button class="gold-button">
+                ENTER ADMIN
+            </button>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>
+
+<script>
+async function loginWithTouchID() {
+    try {
+        const optionsResponse = await fetch("/admin/passkey/options", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const options = await optionsResponse.json();
+
+        if (!optionsResponse.ok) {
+            alert(options.error || "Touch ID is not registered yet.");
+            return;
+        }
+
+        const publicKey = {
+            ...options,
+            challenge: base64urlToBuffer(options.challenge),
+            allowCredentials: (options.allowCredentials || []).map(c => ({
+                ...c,
+                id: base64urlToBuffer(c.id)
+            }))
+        };
+
+        const credential = await navigator.credentials.get({
+            publicKey
+        });
+
+        const response = {
+            id: credential.id,
+            rawId: bufferToBase64url(credential.rawId),
+            type: credential.type,
+            response: {
+                clientDataJSON: bufferToBase64url(
+                    credential.response.clientDataJSON
+                ),
+                authenticatorData: bufferToBase64url(
+                    credential.response.authenticatorData
+                ),
+                signature: bufferToBase64url(
+                    credential.response.signature
+                ),
+                userHandle: credential.response.userHandle
+                    ? bufferToBase64url(credential.response.userHandle)
+                    : null
+            }
+        };
+
+        const loginResponse = await fetch("/admin/passkey/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(response)
+        });
+
+        const result = await loginResponse.json();
+
+        if (loginResponse.ok && result.success) {
+            window.location.href = "/admin";
+        } else {
+            alert(result.error || "Touch ID login failed.");
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Touch ID login was cancelled or unavailable.");
+    }
+}
+
+function base64urlToBuffer(value) {
+    value = value.replace(/-/g, "+").replace(/_/g, "/");
+    while (value.length % 4) value += "=";
+
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+
+    return bytes.buffer;
+}
+
+function bufferToBase64url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+
+    bytes.forEach(byte => {
+        binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+}
+</script>

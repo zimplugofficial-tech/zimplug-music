@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.article-page {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 35px 25px 60px;
+}
+
+.article-back {
+    display: inline-block;
+    margin-bottom: 25px;
+    color: #c9a24a;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.article-back:hover {
+    color: #e4c66f;
+}
+
+.article-header {
+    margin-bottom: 25px;
+}
+
+.article-category {
+    color: #c9a24a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+}
+
+.article-title {
+    margin: 0;
+    max-width: 800px;
+    color: #ffffff;
+    font-size: 38px;
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+.article-meta {
+    margin-top: 12px;
+    color: #929292;
+    font-size: 12px;
+}
+
+.article-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin-top: 22px;
+}
+
+.article-image {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 0 28px;
+}
+
+.article-image img {
+    display: block;
+    width: 100%;
+    max-height: 430px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.article-body {
+    color: #dddddd;
+    font-size: 16px;
+    line-height: 1.75;
+    white-space: pre-line;
+}
+
+.article-body p {
+    margin: 0 0 18px;
+}
+
+.article-footer {
+    margin-top: 40px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+@media (max-width: 700px) {
+    .article-page {
+        padding: 25px 18px 45px;
+    }
+
+    .article-title {
+        font-size: 28px;
+    }
+
+    .article-image img {
+        max-height: 280px;
+    }
+
+    .article-body {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+}
+</style>
+
+<section class="article-page">
+
+    <a href="{{ url_for('news') }}" class="article-back">
+        ← BACK TO NEWS
+    </a>
+
+    <header class="article-header">
+
+        <div class="article-category">
+            ZIMPLUG NEWS
+        </div>
+
+        <h1 class="article-title">
+            {{ article['title'] }}
+        </h1>
+
+        <div class="article-meta">
+            {{ article['created_at'] }}
+        </div>
+
+        <div class="article-divider"></div>
+
+    </header>
+
+    {% if article['image'] %}
+    <div class="article-image">
+        <img
+            src="{{ url_for('static', filename='images/news/' ~ article['image']) }}"
+            alt="{{ article['title'] }}"
+        >
+    </div>
+    {% endif %}
+
+    <article class="article-body">
+        {{ article['body'] }}
+    </article>
+
+    <footer class="article-footer">
+        <a href="{{ url_for('news') }}" class="article-back">
+            ← BACK TO NEWS
+        </a>
+    </footer>
+
+</section>
+
+{% endblock %}
