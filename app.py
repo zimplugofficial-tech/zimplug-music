@@ -1802,30 +1802,3 @@ if __name__ == "__main__":
         port=5050,
         debug=True,
     )
-
-@app.route("/admin/news/delete/<int:news_id>", methods=["POST"])
-@admin_required
-def delete_news(news_id):
-    connection = db()
-
-    article = connection.execute(
-        "SELECT image FROM news WHERE id = ?",
-        (news_id,)
-    ).fetchone()
-
-    if article is None:
-        connection.close()
-        return "News article not found.", 404
-
-    connection.execute(
-        "DELETE FROM news WHERE id = ?",
-        (news_id,)
-    )
-
-    connection.commit()
-    connection.close()
-
-    return redirect(url_for("admin_news"))
-
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5050, debug=True)
