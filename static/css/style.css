@@ -8231,3 +8231,103 @@ section,
     }
 }
 
+
+/* CLEAN PLAY BUTTONS — MOBILE ONLY */
+
+@media (max-width: 768px) {
+
+    /* Song list play button */
+    .song-play {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border: 1px solid #d4af37 !important;
+        border-radius: 50% !important;
+        background: #050505 !important;
+
+        font-size: 0 !important;
+    }
+
+    .song-play::before,
+    .song-play::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    .song-play-icon {
+        display: block !important;
+        width: 0 !important;
+        height: 0 !important;
+
+        margin-left: 3px !important;
+
+        border-top: 7px solid transparent !important;
+        border-bottom: 7px solid transparent !important;
+        border-left: 10px solid #d4af37 !important;
+    }
+
+    .song-play.is-playing .song-play-icon {
+        width: 9px !important;
+        height: 12px !important;
+        margin-left: 0 !important;
+
+        border: 0 !important;
+
+        background:
+            linear-gradient(
+                to right,
+                #d4af37 0 3px,
+                transparent 3px 6px,
+                #d4af37 6px 9px
+            ) !important;
+    }
+
+    /* Bottom player: remove every old play drawing */
+    #player .player-play::before,
+    #player .player-play::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    #player .player-play-icon::before,
+    #player .player-play-icon::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    #player .player-play-icon {
+        display: block !important;
+        width: 0 !important;
+        height: 0 !important;
+
+        margin-left: 3px !important;
+
+        border-top: 8px solid transparent !important;
+        border-bottom: 8px solid transparent !important;
+        border-left: 12px solid #050505 !important;
+    }
+
+    #player .player-play.is-playing .player-play-icon {
+        width: 10px !important;
+        height: 13px !important;
+
+        margin-left: 0 !important;
+        border: 0 !important;
+
+        background:
+            linear-gradient(
+                to right,
+                #050505 0 3px,
+                transparent 3px 7px,
+                #050505 7px 10px
+            ) !important;
+    }
+}
+
