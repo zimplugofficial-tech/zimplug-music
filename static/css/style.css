@@ -8452,3 +8452,245 @@ section,
     }
 }
 
+
+/* ==========================================
+   ZIMPLUG — PROFESSIONAL DESKTOP HOME
+   ========================================== */
+
+@media (min-width: 769px) {
+
+    /* HOME MUSIC SECTION */
+    .music-section {
+        max-width: 1180px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .section-heading {
+        margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+        font-size: 30px;
+        letter-spacing: -0.5px;
+    }
+
+    .section-heading a {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        color: #d4af37;
+        text-decoration: none;
+    }
+
+    .section-heading a:hover {
+        color: #f1ce58;
+    }
+
+    /* SONG LIST */
+    .song-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .song-row {
+        min-height: 70px;
+        padding: 9px 14px;
+
+        display: grid;
+        grid-template-columns: 38px 42px 52px minmax(220px, 1fr) 180px 42px;
+        align-items: center;
+        gap: 12px;
+
+        background: #0b0b0b;
+        border: 1px solid rgba(255,255,255,.06);
+        border-radius: 12px;
+
+        transition:
+            background .18s ease,
+            border-color .18s ease,
+            transform .18s ease;
+    }
+
+    .song-row:hover {
+        background: #101010;
+        border-color: rgba(212,175,55,.28);
+        transform: translateY(-1px);
+    }
+
+    .song-rank {
+        color: #858585;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    /* PLAY BUTTON */
+    .song-play {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid rgba(212,175,55,.55);
+        border-radius: 50%;
+
+        background: #050505;
+        color: #d4af37;
+
+        cursor: pointer;
+        transition: .18s ease;
+    }
+
+    .song-play:hover {
+        background: #d4af37;
+        border-color: #d4af37;
+        transform: scale(1.06);
+    }
+
+    .song-play-icon {
+        width: 0;
+        height: 0;
+        margin-left: 3px;
+
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 9px solid #d4af37;
+    }
+
+    .song-play:hover .song-play-icon {
+        border-left-color: #050505;
+    }
+
+    .song-play.is-playing .song-play-icon {
+        width: 9px;
+        height: 11px;
+        margin-left: 0;
+        border: 0;
+
+        background:
+            linear-gradient(
+                to right,
+                #d4af37 0 3px,
+                transparent 3px 6px,
+                #d4af37 6px 9px
+            );
+    }
+
+    /* COVER */
+    .song-cover {
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #151515;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #d4af37;
+        font-size: 20px;
+    }
+
+    .song-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* SONG DETAILS */
+    .song-details {
+        min-width: 0;
+    }
+
+    .song-details strong {
+        display: block;
+
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .song-details span {
+        display: block;
+        margin-top: 5px;
+
+        color: #858585;
+        font-size: 12px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* META */
+    .song-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        color: #666;
+        font-size: 11px;
+        text-align: right;
+    }
+
+    /* DOWNLOAD */
+    .song-row .download-button {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 9px;
+
+        background: transparent;
+        color: #858585;
+
+        text-decoration: none;
+        font-size: 0;
+
+        transition: .18s ease;
+    }
+
+    .song-row .download-button::before {
+        content: "↓";
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    .song-row .download-button:hover {
+        color: #050505;
+        background: #d4af37;
+        border-color: #d4af37;
+        transform: translateY(-1px);
+    }
+
+    /* BOTTOM PLAYER */
+    .player {
+        border: 1px solid rgba(212,175,55,.16);
+        box-shadow: 0 -8px 30px rgba(0,0,0,.28);
+    }
+
+    .player-play {
+        transition: transform .18s ease;
+    }
+
+    .player-play:hover {
+        transform: scale(1.05);
+    }
+
+}
+
