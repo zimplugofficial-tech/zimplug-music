@@ -131,7 +131,7 @@
 
         if (!playButton || !audio) return;
 
-        playButton.textContent = audio.paused ? "▶" : "❚❚";
+        playButton.classList.toggle("is-playing", !audio.paused);
 
         playButton.setAttribute(
             "aria-label",
@@ -151,7 +151,7 @@
             row.classList.remove("playing");
 
             if (button) {
-                button.textContent = "▶";
+                button.classList.remove("is-playing");
                 button.setAttribute("aria-label", "Play");
             }
         });
@@ -173,7 +173,7 @@
         const button = activeRow.querySelector(".song-play");
 
         if (button) {
-            button.textContent = "❚❚";
+            button.classList.add("is-playing");
             button.setAttribute("aria-label", "Pause");
         }
     }

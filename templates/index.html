@@ -241,9 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     #{{ loop.index }}
                 </span>
 
-                <button class="song-play">
-                    ▶
-                </button>
+                <button class="song-play" aria-label="Play song"><span class="song-play-icon" aria-hidden="true"></span></button>
 
                 <div class="song-cover">
                     {% if song.cover %}

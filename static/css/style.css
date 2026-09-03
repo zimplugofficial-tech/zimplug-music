@@ -7314,3 +7314,141 @@ section,
 
 }
 
+
+/* PROFESSIONAL PLAYER ICONS */
+
+.player-icon,
+.song-play-icon {
+    display: block;
+    position: relative;
+    width: 0;
+    height: 0;
+}
+
+.player-play-icon {
+    margin-left: 3px;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid #050505;
+}
+
+.player-play.is-playing .player-play-icon {
+    width: 10px;
+    height: 12px;
+    margin-left: 0;
+    border: 0;
+}
+
+.player-play.is-playing .player-play-icon::before,
+.player-play.is-playing .player-play-icon::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 12px;
+    background: #050505;
+}
+
+.player-play.is-playing .player-play-icon::before {
+    left: 0;
+}
+
+.player-play.is-playing .player-play-icon::after {
+    right: 0;
+}
+
+.player-prev,
+.player-next {
+    width: 13px;
+    height: 13px;
+}
+
+.player-prev::before,
+.player-next::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    width: 7px;
+    height: 7px;
+    border-top: 1.5px solid currentColor;
+    border-left: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+}
+
+.player-prev::after,
+.player-next::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    width: 1.5px;
+    height: 11px;
+    background: currentColor;
+}
+
+.player-prev::before {
+    left: 0;
+}
+
+.player-prev::after {
+    left: 1px;
+}
+
+.player-next::before {
+    right: 0;
+    transform: rotate(135deg);
+}
+
+.player-next::after {
+    right: 1px;
+}
+
+.song-play-icon {
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 9px solid #050505;
+    margin-left: 2px;
+}
+
+.song-play.is-playing .song-play-icon {
+    width: 9px;
+    height: 11px;
+    border: 0;
+    margin-left: 0;
+}
+
+.song-play.is-playing .song-play-icon::before,
+.song-play.is-playing .song-play-icon::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 11px;
+    background: #050505;
+}
+
+.song-play.is-playing .song-play-icon::before {
+    left: 0;
+}
+
+.song-play.is-playing .song-play-icon::after {
+    right: 0;
+}
+
+@media (max-width: 768px) {
+    .player-controls button {
+        font-size: 0;
+    }
+
+    .player-controls .player-play {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .song-play {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
