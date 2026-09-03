@@ -7452,3 +7452,231 @@ section,
     }
 }
 
+
+/* FINAL MOBILE PLAYER FIX — MOBILE ONLY */
+
+@media (max-width: 768px) {
+
+    /* Compact bottom player */
+    .player {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        z-index: 9999;
+
+        height: 82px;
+        min-height: 82px;
+        padding: 10px 14px;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        border-radius: 18px;
+        box-sizing: border-box;
+    }
+
+    /* Keep artwork beside the song information */
+    .player-info {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .player-art {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+        border-radius: 9px;
+        overflow: hidden;
+    }
+
+    .player-info > div:last-child {
+        min-width: 0;
+    }
+
+    #playerTitle {
+        display: block;
+        max-width: 190px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 14px;
+        line-height: 1.25;
+    }
+
+    #playerArtist {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Player controls */
+    .player-controls {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        margin-left: 8px;
+    }
+
+    .player-controls button {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        color: #858585;
+        font-size: 0;
+    }
+
+    /* Remove ALL old pseudo play icons */
+    .player-play::before,
+    .player-play::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* Main play button */
+    .player-controls .player-play {
+        width: 48px;
+        height: 48px;
+        margin: 0 2px;
+        border-radius: 50% !important;
+        background: #d4af37 !important;
+        color: #050505 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .player-play-icon {
+        position: relative;
+        display: block;
+        width: 0;
+        height: 0;
+        margin-left: 3px;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-left: 10px solid #050505;
+    }
+
+    .player-play.is-playing .player-play-icon {
+        width: 10px;
+        height: 12px;
+        margin-left: 0;
+        border: 0;
+    }
+
+    .player-play.is-playing .player-play-icon::before,
+    .player-play.is-playing .player-play-icon::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        width: 3px;
+        height: 12px;
+        background: #050505;
+    }
+
+    .player-play.is-playing .player-play-icon::before {
+        left: 0;
+    }
+
+    .player-play.is-playing .player-play-icon::after {
+        right: 0;
+    }
+
+    /* Previous / next */
+    .player-prev,
+    .player-next {
+        position: relative;
+        width: 13px !important;
+        height: 13px !important;
+        margin: 0;
+    }
+
+    .player-prev::before,
+    .player-next::before {
+        content: "";
+        position: absolute;
+        top: 3px;
+        width: 7px;
+        height: 7px;
+        border-top: 1.5px solid currentColor;
+        border-left: 1.5px solid currentColor;
+    }
+
+    .player-prev::before {
+        left: 0;
+        transform: rotate(-45deg);
+    }
+
+    .player-next::before {
+        right: 0;
+        transform: rotate(135deg);
+    }
+
+    .player-prev::after,
+    .player-next::after {
+        content: "";
+        position: absolute;
+        top: 1px;
+        width: 1.5px;
+        height: 11px;
+        background: currentColor;
+    }
+
+    .player-prev::after {
+        left: 1px;
+    }
+
+    .player-next::after {
+        right: 1px;
+    }
+
+    /* Prevent the fixed player from covering the last content */
+    body {
+        padding-bottom: 108px;
+    }
+
+    /* Slightly smaller phones */
+    @media (max-width: 390px) {
+        .player {
+            left: 9px;
+            right: 9px;
+            bottom: 9px;
+            height: 78px;
+            min-height: 78px;
+            padding: 9px 11px;
+        }
+
+        .player-art {
+            width: 54px;
+            height: 54px;
+            min-width: 54px;
+        }
+
+        #playerTitle {
+            max-width: 150px;
+            font-size: 13px;
+        }
+
+        .player-controls .player-play {
+            width: 44px;
+            height: 44px;
+        }
+    }
+}
+
