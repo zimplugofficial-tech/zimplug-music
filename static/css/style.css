@@ -7954,3 +7954,280 @@ section,
     }
 }
 
+
+/* ==========================================
+   ZIMPLUG — FINAL MOBILE PLAYER
+   ========================================== */
+
+@media (max-width: 768px) {
+
+    /* PLAYER */
+    #player.player {
+        position: fixed !important;
+        left: 10px !important;
+        right: 10px !important;
+        bottom: 10px !important;
+
+        width: auto !important;
+        height: 76px !important;
+        min-height: 76px !important;
+        max-height: 76px !important;
+
+        padding: 8px 12px !important;
+        box-sizing: border-box !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+
+        border-radius: 16px !important;
+        overflow: hidden !important;
+        z-index: 99999 !important;
+    }
+
+    /* SONG INFO */
+    #player .player-info {
+        display: flex !important;
+        align-items: center !important;
+        gap: 9px !important;
+
+        min-width: 0 !important;
+        flex: 1 !important;
+    }
+
+    #player .player-art {
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px !important;
+        flex: 0 0 52px !important;
+
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    #player #playerTitle {
+        display: block !important;
+        max-width: 155px !important;
+
+        font-size: 13px !important;
+        line-height: 1.2 !important;
+
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    #player #playerArtist {
+        display: block !important;
+        margin-top: 3px !important;
+
+        font-size: 11px !important;
+        line-height: 1.2 !important;
+
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* CONTROLS */
+    #player .player-controls {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 7px !important;
+        margin-left: 7px !important;
+
+        flex: 0 0 auto !important;
+    }
+
+    #player .player-controls button {
+        position: relative !important;
+
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+
+        padding: 0 !important;
+        margin: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border: 0 !important;
+        background: transparent !important;
+
+        font-size: 0 !important;
+        color: #858585 !important;
+    }
+
+    /* ==========================================
+       KILL EVERY OLD PLAYER ICON
+       ========================================== */
+
+    #player .player-controls button::before,
+    #player .player-controls button::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    #player .player-icon::before,
+    #player .player-icon::after,
+    #player .player-play-icon::before,
+    #player .player-play-icon::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* ==========================================
+       PLAY BUTTON
+       EXACTLY ONE ICON
+       ========================================== */
+
+    #player .player-controls .player-play {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+
+        border-radius: 50% !important;
+
+        background: #d4af37 !important;
+        color: #050505 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Existing icon span becomes the ONLY icon */
+    #player .player-controls .player-play .player-play-icon {
+        display: block !important;
+
+        position: relative !important;
+
+        width: 0 !important;
+        height: 0 !important;
+
+        margin-left: 3px !important;
+
+        border-top: 7px solid transparent !important;
+        border-bottom: 7px solid transparent !important;
+        border-left: 11px solid #050505 !important;
+    }
+
+    /* PAUSE */
+    #player .player-controls .player-play.is-playing .player-play-icon {
+        width: 10px !important;
+        height: 13px !important;
+
+        margin-left: 0 !important;
+
+        border: 0 !important;
+
+        background:
+            linear-gradient(
+                to right,
+                #050505 0 3px,
+                transparent 3px 7px,
+                #050505 7px 10px
+            ) !important;
+    }
+
+    /* ==========================================
+       PREVIOUS / NEXT
+       ========================================== */
+
+    #player .player-prev,
+    #player .player-next {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+
+        position: relative !important;
+    }
+
+    #player .player-prev::before,
+    #player .player-prev::after,
+    #player .player-next::before,
+    #player .player-next::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* simple clean previous arrow */
+    #player .player-prev {
+        background:
+            linear-gradient(
+                135deg,
+                transparent 45%,
+                currentColor 46%,
+                currentColor 55%,
+                transparent 56%
+            )
+            center / 9px 9px no-repeat !important;
+    }
+
+    /* simple clean next arrow */
+    #player .player-next {
+        background:
+            linear-gradient(
+                315deg,
+                transparent 45%,
+                currentColor 46%,
+                currentColor 55%,
+                transparent 56%
+            )
+            center / 9px 9px no-repeat !important;
+    }
+
+    /* Keep page content above the browser bottom area */
+    body {
+        padding-bottom: 92px !important;
+    }
+}
+
+
+/* SMALL PHONES */
+
+@media (max-width: 390px) {
+
+    #player.player {
+        left: 8px !important;
+        right: 8px !important;
+        bottom: 8px !important;
+
+        height: 72px !important;
+        min-height: 72px !important;
+        max-height: 72px !important;
+
+        padding: 7px 10px !important;
+    }
+
+    #player .player-art {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        flex-basis: 48px !important;
+    }
+
+    #player #playerTitle {
+        max-width: 130px !important;
+        font-size: 12px !important;
+    }
+
+    #player #playerArtist {
+        font-size: 10px !important;
+    }
+
+    #player .player-controls {
+        gap: 5px !important;
+    }
+
+    #player .player-controls .player-play {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+    }
+}
+
