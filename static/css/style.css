@@ -6660,3 +6660,657 @@ section,
     }
 }
 
+
+
+/* =========================================================
+   ZIMPLUG MUSIC — MOBILE POLISH
+   Desktop layout remains unchanged
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    /* Prevent sideways scrolling */
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* -----------------------------------------
+       GENRE CAROUSEL
+       ----------------------------------------- */
+
+    .zp-genres-track {
+        gap: 12px !important;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+    }
+
+    .zp-genre-card,
+    .genre-card {
+        flex: 0 0 150px !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        height: 185px !important;
+    }
+
+    .zp-genre-dots {
+        margin-top: 14px !important;
+    }
+
+    /* -----------------------------------------
+       REDUCE THE HUGE EMPTY SPACE
+       BEFORE TRENDING
+       ----------------------------------------- */
+
+    .music-section {
+        margin-top: 0 !important;
+        padding-top: 42px !important;
+        padding-bottom: 30px !important;
+    }
+
+    /* -----------------------------------------
+       TRENDING HEADER
+       ----------------------------------------- */
+
+    .section-heading {
+        width: calc(100% - 36px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        gap: 15px !important;
+        align-items: flex-end !important;
+    }
+
+    .section-heading h2 {
+        font-size: 34px !important;
+        line-height: 1.05 !important;
+        margin-top: 7px !important;
+        letter-spacing: -1.2px !important;
+    }
+
+    .section-heading .eyebrow {
+        font-size: 12px !important;
+        letter-spacing: 4px !important;
+    }
+
+    .section-heading > a {
+        white-space: nowrap !important;
+        font-size: 12px !important;
+        letter-spacing: 1.5px !important;
+    }
+
+    /* -----------------------------------------
+       SONG LIST
+       ----------------------------------------- */
+
+    .song-list {
+        width: calc(100% - 36px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .song-row {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 82px !important;
+        padding: 14px 0 !important;
+        gap: 10px !important;
+
+        display: grid !important;
+        grid-template-columns: 32px 44px 58px minmax(0, 1fr) 46px !important;
+        align-items: center !important;
+    }
+
+    /* -----------------------------------------
+       RANK
+       ----------------------------------------- */
+
+    .song-rank {
+        width: 32px !important;
+        min-width: 32px !important;
+        text-align: center !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+    }
+
+    /* -----------------------------------------
+       PROFESSIONAL MOBILE PLAY BUTTON
+       ----------------------------------------- */
+
+    .song-play {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        padding: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border-radius: 50% !important;
+
+        background: #0b0b0b !important;
+        border: 1px solid rgba(212, 175, 55, 0.45) !important;
+
+        color: #d4af37 !important;
+
+        font-size: 0 !important;
+        line-height: 1 !important;
+
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+
+        transition:
+            transform .15s ease,
+            background .15s ease,
+            border-color .15s ease !important;
+    }
+
+    /* Clean CSS play triangle — replaces blue emoji/browser-looking icon */
+    .song-play::before {
+        content: "" !important;
+        display: block !important;
+
+        width: 0 !important;
+        height: 0 !important;
+
+        margin-left: 3px !important;
+
+        border-top: 7px solid transparent !important;
+        border-bottom: 7px solid transparent !important;
+        border-left: 10px solid #d4af37 !important;
+    }
+
+    .song-play:active {
+        transform: scale(.92) !important;
+        background: #161616 !important;
+        border-color: #d4af37 !important;
+    }
+
+    /* -----------------------------------------
+       COVER ART
+       ----------------------------------------- */
+
+    .song-cover {
+        width: 58px !important;
+        height: 58px !important;
+        min-width: 58px !important;
+
+        border-radius: 9px !important;
+        overflow: hidden !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        background: #111111 !important;
+    }
+
+    .song-cover img {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    /* -----------------------------------------
+       SONG INFORMATION
+       ----------------------------------------- */
+
+    .song-details {
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .song-details strong {
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+        -webkit-line-clamp: 2 !important;
+
+        overflow: hidden !important;
+
+        font-size: 15px !important;
+        line-height: 1.25 !important;
+
+        white-space: normal !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .song-details span {
+        display: block !important;
+
+        margin-top: 5px !important;
+
+        font-size: 13px !important;
+        line-height: 1.2 !important;
+
+        color: #858585 !important;
+
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* -----------------------------------------
+       PLAY / DOWNLOAD STATISTICS
+       Hide these on small screens so the
+       song row stays clean.
+       ----------------------------------------- */
+
+    .song-meta {
+        display: none !important;
+    }
+
+    /* -----------------------------------------
+       DOWNLOAD BUTTON
+       ----------------------------------------- */
+
+    .download-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        box-sizing: border-box !important;
+
+        border-radius: 10px !important;
+
+        border: 1px solid rgba(212, 175, 55, 0.35) !important;
+
+        color: #d4af37 !important;
+        background: #080808 !important;
+
+        font-size: 25px !important;
+        line-height: 1 !important;
+        text-decoration: none !important;
+
+        transition:
+            background .15s ease,
+            border-color .15s ease,
+            transform .15s ease !important;
+    }
+
+    .download-button:active {
+        transform: scale(.94) !important;
+        background: #151515 !important;
+        border-color: #d4af37 !important;
+    }
+
+    /* -----------------------------------------
+       SONG DIVIDERS
+       ----------------------------------------- */
+
+    .song-row {
+        border-bottom-color: rgba(255,255,255,.08) !important;
+    }
+
+    /* -----------------------------------------
+       EMPTY STATE
+       ----------------------------------------- */
+
+    .empty-state {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 35px 20px !important;
+    }
+
+}
+
+
+/* Extra-small phones */
+
+@media (max-width: 390px) {
+
+    .section-heading h2 {
+        font-size: 30px !important;
+    }
+
+    .section-heading > a {
+        font-size: 10px !important;
+    }
+
+    .song-row {
+        grid-template-columns: 27px 40px 54px minmax(0, 1fr) 42px !important;
+        gap: 8px !important;
+    }
+
+    .song-rank {
+        width: 27px !important;
+        min-width: 27px !important;
+        font-size: 13px !important;
+    }
+
+    .song-play {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+    }
+
+    .song-play::before {
+        border-top-width: 6px !important;
+        border-bottom-width: 6px !important;
+        border-left-width: 9px !important;
+    }
+
+    .song-cover {
+        width: 54px !important;
+        height: 54px !important;
+        min-width: 54px !important;
+    }
+
+    .download-button {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+    }
+
+}
+
+
+/* =========================================================
+   ZIMPLUG — PROFESSIONAL MOBILE PLAYER
+   Mobile only
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    /* -------------------------------
+       PERSISTENT BOTTOM PLAYER
+       ------------------------------- */
+
+    .player {
+        left: 10px !important;
+        right: 10px !important;
+        bottom: 10px !important;
+
+        min-height: 66px !important;
+        padding: 9px 12px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+
+        box-sizing: border-box !important;
+
+        background: rgba(10, 10, 10, 0.97) !important;
+        border: 1px solid rgba(212, 175, 55, 0.20) !important;
+        border-radius: 12px !important;
+
+        box-shadow:
+            0 12px 35px rgba(0, 0, 0, .55) !important;
+
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+    }
+
+    /* Player artwork */
+
+    .player-art {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+
+        border-radius: 8px !important;
+        overflow: hidden !important;
+
+        background: #151515 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        color: #d4af37 !important;
+        font-size: 20px !important;
+    }
+
+    .player-art img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+
+    /* Player information */
+
+    .player-info {
+        flex: 1 !important;
+        min-width: 0 !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+
+        overflow: hidden !important;
+    }
+
+    .player-info strong {
+        display: block !important;
+
+        color: #ffffff !important;
+        font-size: 13px !important;
+        line-height: 1.25 !important;
+
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .player-info span {
+        display: block !important;
+
+        margin-top: 3px !important;
+
+        color: #858585 !important;
+        font-size: 11px !important;
+
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* -------------------------------
+       PLAYER CONTROLS
+       ------------------------------- */
+
+    .player-controls {
+        flex-shrink: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 4px !important;
+    }
+
+    .player-controls button {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+
+        padding: 0 !important;
+        margin: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border: 0 !important;
+        border-radius: 50% !important;
+
+        background: transparent !important;
+        color: #858585 !important;
+
+        font-size: 0 !important;
+        line-height: 1 !important;
+
+        position: relative !important;
+    }
+
+    /* Previous */
+
+    #previousButton::before {
+        content: "" !important;
+
+        width: 0 !important;
+        height: 0 !important;
+
+        border-top: 6px solid transparent !important;
+        border-bottom: 6px solid transparent !important;
+        border-right: 9px solid #858585 !important;
+    }
+
+    #previousButton::after {
+        content: "" !important;
+
+        width: 2px !important;
+        height: 12px !important;
+
+        background: #858585 !important;
+
+        position: absolute !important;
+        left: 9px !important;
+    }
+
+    /* Next */
+
+    #nextButton::before {
+        content: "" !important;
+
+        width: 0 !important;
+        height: 0 !important;
+
+        border-top: 6px solid transparent !important;
+        border-bottom: 6px solid transparent !important;
+        border-left: 9px solid #858585 !important;
+    }
+
+    #nextButton::after {
+        content: "" !important;
+
+        width: 2px !important;
+        height: 12px !important;
+
+        background: #858585 !important;
+
+        position: absolute !important;
+        right: 9px !important;
+    }
+
+    /* Main play button */
+
+    .player-controls .player-play {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+
+        margin: 0 2px !important;
+
+        background: #d4af37 !important;
+        border: 0 !important;
+
+        color: #050505 !important;
+
+        box-shadow: 0 4px 14px rgba(212, 175, 55, .18) !important;
+    }
+
+    .player-controls .player-play::before {
+        content: "" !important;
+
+        width: 0 !important;
+        height: 0 !important;
+
+        margin-left: 3px !important;
+
+        border-top: 7px solid transparent !important;
+        border-bottom: 7px solid transparent !important;
+        border-left: 10px solid #050505 !important;
+    }
+
+    .player-controls button:active {
+        transform: scale(.92) !important;
+    }
+
+    .player-controls .player-play:active {
+        background: #f1ce58 !important;
+    }
+
+    /* -------------------------------
+       SONG LIST PLAY BUTTON
+       ------------------------------- */
+
+    .song-play {
+        font-size: 0 !important;
+        position: relative !important;
+    }
+
+    .song-play::before {
+        content: "" !important;
+
+        width: 0 !important;
+        height: 0 !important;
+
+        margin-left: 3px !important;
+
+        border-top: 7px solid transparent !important;
+        border-bottom: 7px solid transparent !important;
+        border-left: 10px solid #d4af37 !important;
+    }
+
+    /* -------------------------------
+       EXTRA SPACE FOR FIXED PLAYER
+       ------------------------------- */
+
+    body {
+        padding-bottom: 90px !important;
+    }
+
+}
+
+
+/* Smaller phones */
+
+@media (max-width: 390px) {
+
+    .player {
+        left: 7px !important;
+        right: 7px !important;
+        bottom: 7px !important;
+
+        padding: 8px 9px !important;
+    }
+
+    .player-art {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+    }
+
+    .player-controls {
+        gap: 1px !important;
+    }
+
+    .player-controls button {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+    }
+
+    .player-controls .player-play {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+    }
+
+    .player-info strong {
+        font-size: 12px !important;
+    }
+
+    .player-info span {
+        font-size: 10px !important;
+    }
+
+}
+
