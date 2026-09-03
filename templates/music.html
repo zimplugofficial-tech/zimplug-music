@@ -84,7 +84,7 @@
             >
 
                 <button class="song-play" type="button" aria-label="Play {{ song.title }}">
-                    <span>▶</span>
+                    <span class="song-play-icon" aria-hidden="true"></span>
                 </button>
 
 
@@ -98,8 +98,6 @@
                     {% else %}
                         <div class="cover-placeholder">♪</div>
                     {% endif %}
-
-                    <div class="cover-overlay">▶</div>
 
                 </div>
 
